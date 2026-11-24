@@ -2,6 +2,24 @@
 // A broadsheet front page drawn programmatically: 37 verified stories
 // (3 heroes + 12 cards + 22 briefs), 9 regions, stat strip, dotted world
 // map with numbered pins, per-story sources.
+// v6c: red-team v6 fixes — hero 1 Hormuz REPLACED (the 3-tanker claim was
+// Monday, verified first-hand: AP/Hellenic Shipping, TBS, Reuters via
+// Press TV all date the claim Monday; DefenceMENA: IRNA carried it early
+// Tuesday but Tasnim said the statement was issued Monday night). New
+// hero 1 is the Seoul jets story promoted from card 4 (Reuters/AP/AJP,
+// Tuesday: Russian jets in KADIZ, 9,000 told to shelter at 07:52, no
+// airspace violation); card 4 is now the Tuesday tariffs probe
+// (Reuters: sources said Tuesday, 16 partners). Brief 37 is now the
+// Uzbekistan-Jordan 19 deals (Interfax, Tashkent Nov 24 — the S&P BB+
+// lift was 20/21 Nov, not Tuesday). Brief 32 is the Tuesday rand print
+// 17.39 (XE/Daily Investor, Tuesday morning). Brief 29 is UK retail
+// sales best since 2022 (Reuters/CBI, Tuesday — the 4-year earnings
+// boom did not verify). Card 5 wounded updated to the final Tuesday
+// figure 44 (AP, updated 06:00 EST Nov 24 — Reuters wire's 40 was an
+// earlier update). Card 12 body now leads with the Tuesday charge.
+// Card 15 drops the disputed missing count, keeps toll 26. Map taller
+// again (230) so the left column no longer ends in empty paper.
+// Regions recount: MIDEAST 3, AMERICAS 6 (Hormuz out, tariffs card in).
 // v6: Tuesday-only total — every story happened, or was first reported,
 // on Tuesday 24 November 2026, so no story needs a day label at all.
 // The dated-items box is gone, the footer is one short line, hero 2 is
@@ -14,8 +32,8 @@
 // taller (180) and the brief rows are spaced wider (pitch 31).
 // v5b: red-team fixes — dated-items box rewritten on one event-day
 // standard; kicker attributed; toll updates verified first-hand (UAE 13,
-// Serang 26 dead, 8 missing; Zaporizhzhia stays 22 — Reuters still
-// reports 22, the 40 figure did not verify).
+// Serang 26 dead; Zaporizhzhia wounded 22 at the time — since updated
+// to 44, see v6c above).
 // v5: 3 new heavy heroes (Hormuz tankers, NVIDIA/Huang, Benghazi warship).
 // v4c: brief #26 Saudi close +0.76% rounds to 0.8 (was 0.9, the morning open).
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
@@ -368,11 +386,11 @@ type Story = {
 
 const HEROES: Story[] = [
   {
-    n: 1, place: "HORMUZ", beat: "WAR",
-    head: "IRGC: 3 TANKERS HIT MINES IN HORMUZ",
-    body: "TEHRAN CLAIMS MINES SET 3 ABLAZE. UNVERIFIED.",
-    src: "REUTERS", tag: "CLAIM",
-    lat: 26.5, lon: 56.2, dx: -20, dy: 34,
+    n: 1, place: "SEOUL", beat: "DEFENCE",
+    head: "RUSSIAN JETS IN KOREAN AIR ZONE",
+    body: "9,000 TOLD TO SHELTER AT 07:52. NO INTRUSION.",
+    src: "REUTERS", tag: "REPORTED",
+    lat: 37.5, lon: 130.9, dx: 12, dy: -24,
   },
   {
     n: 2, place: "WASHINGTON", beat: "ECONOMY",
@@ -392,15 +410,15 @@ const HEROES: Story[] = [
 
 const CARDS: Story[] = [
   {
-    n: 4, place: "SEOUL", beat: "DEFENCE",
-    head: "RUSSIAN JETS IN KOREAN AIR ZONE",
-    body: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS.",
+    n: 4, place: "WASHINGTON", beat: "TRADE",
+    head: "TRUMP TO UNVEIL NEW TARIFFS",
+    body: "PROBE TARGETS 16 PARTNERS, SOURCES SAY.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 37.5, lon: 130.9, dx: 12, dy: -24,
+    lat: 38.9, lon: -77.0, dx: -30, dy: 30,
   },
   {
     n: 5, place: "ZAPORIZHZHIA", beat: "WAR",
-    head: "STRIKE KILLS 2, WOUNDS 22",
+    head: "STRIKE KILLS 2, WOUNDS 44",
     body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
     src: "REUTERS", tag: "CLAIM",
     lat: 47.8, lon: 35.2, dx: 34, dy: -8,
@@ -450,7 +468,7 @@ const CARDS: Story[] = [
   {
     n: 12, place: "JAKARTA", beat: "POLITICS",
     head: "EX-POLICE CHIEF CHARGED TREASON",
-    body: "6 SUSPECTS NAMED IN TREASON PLOT, POLICE SAY.",
+    body: "CHARGED WITH TREASON OVER WIRETAP PLOT, POLICE SAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.8, dx: -25, dy: 30,
   },
@@ -471,7 +489,7 @@ const CARDS: Story[] = [
   {
     n: 15, place: "SERANG", beat: "DISASTER",
     head: "26 DEAD IN CANDY FACTORY FIRE",
-    body: "TOLL 26 TUESDAY, 8 MISSING.",
+    body: "TOLL 26 TUESDAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.3, dx: 26, dy: -28,
   },
@@ -492,30 +510,30 @@ const BRIEFS: Brief[] = [
   { n: 26, place: "EMDEN", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
   { n: 27, place: "FRANKFURT", text: "GERMAN BANK PAY TALKS STALL TO JAN 20.", src: "REUTERS" },
   { n: 28, place: "CAPE TOWN", text: "PEPKOR WARNS PORT SNARLS HIT TRADE.", src: "REUTERS" },
-  { n: 29, place: "LONDON", text: "EUROPE EARNINGS BOOM AT 4-YEAR HIGH.", src: "REUTERS" },
+  { n: 29, place: "LONDON", text: "UK RETAIL SALES BEST SINCE 2022, CBI SAYS.", src: "REUTERS" },
   { n: 30, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
   { n: 31, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
-  { n: 32, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
+  { n: 32, place: "JOHANNESBURG", text: "RAND AT 17.39 PER DOLLAR.", src: "XE" },
   { n: 33, place: "OTTAWA", text: "CANADA AND DOHA TO SIGN INVESTMENT DEAL.", src: "REUTERS" },
   { n: 34, place: "BERLIN", text: "GERMAN IFO MORALE RISES TO 90.6.", src: "REUTERS" },
   { n: 35, place: "BRASILIA", text: "LULA BACKS SECOND FISCAL PACKAGE.", src: "REUTERS" },
   { n: 36, place: "WASHINGTON", text: "FARM CHIEF TO FIGHT COURT EMAIL ORDER.", src: "REUTERS" },
-  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS.", src: "S AND P" },
+  { n: 37, place: "TASHKENT", text: "UZBEKISTAN AND JORDAN SIGN 19 DEALS.", src: "INTERFAX" },
 ];
 
 // Stat strip: each number must appear verbatim in its story's text.
 const STATS: Array<{ num: string; label1: string; label2: string; story: string }> = [
   { num: "103.3", label1: "CONSUMER", label2: "CONFIDENCE", story: "CONFIDENCE JUMPS TO 103.3" },
-  { num: "3", label1: "TANKERS HIT", label2: "IN HORMUZ", story: "IRGC: 3 TANKERS HIT MINES IN HORMUZ" },
+  { num: "9,000", label1: "ULLEUNG ISLE", label2: "TOLD TO SHELTER", story: "9,000 TOLD TO SHELTER AT 07:52. NO INTRUSION." },
   { num: "2", label1: "SHIPS HIT", label2: "OFF LIBYA", story: "SYBIHA SAYS 2 SHIPS HIT OFF LIBYA IN SELF-DEFENCE." },
   { num: "26", label1: "DEAD IN", label2: "SERANG FIRE", story: "26 DEAD IN CANDY FACTORY FIRE" },
-  { num: "07:52", label1: "ULLEUNG ALERT", label2: "LOCAL TIME", story: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS." },
+  { num: "07:52", label1: "ULLEUNG ALERT", label2: "LOCAL TIME", story: "9,000 TOLD TO SHELTER AT 07:52. NO INTRUSION." },
   { num: "13", label1: "KILLED IN", label2: "UAE CRASH", story: "BUS-TRUCK CRASH KILLS 13 IN UAE." },
 ];
 
 // Region strip: must sum to the story total (37) and span 9 regions.
 const REGIONS: Array<[string, number]> = [
-  ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 4], ["AMERICAS", 5], ["MEXICO", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
+  ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 3], ["AMERICAS", 6], ["MEXICO", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
 ];
 
 // ------------------------------------------------------------- Checks ----
@@ -546,7 +564,7 @@ function checkAll(): void {
   // 6. Charset: every rendered string must be in the font.
   const texts = [
     "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "37 STORIES - 9 REGIONS - ONE PAGE",
-    "IRGC CLAIMS 3 TANKERS ABLAZE - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE",
+    "RUSSIAN JETS NEAR ULLEUNG - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE",
     "WHERE IT HAPPENED", "RED PINS = STORIES 1-15. POSITIONS APPROXIMATE.",
     "REPORTED = NAMED SOURCES.", "CLAIM = ONE SIDE'S ACCOUNT.",
     "MORE NEWS",
@@ -583,34 +601,32 @@ function checkAll(): void {
 // -------------------------------------------------------------- Icons ----
 // Flat vector illustrations, drawn from simple shapes. No photos, no
 // copied art. Each hero gets its own scene; each card a small icon.
-function drawTankerHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
-  // Tanker ablaze in the strait: dark hull, white deck tanks, orange fire
-  // over two tanks, grey smoke rising. Sea background, 42px tall.
+function drawJetsHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Two jets over Ulleung: sky, the island ringed in red alert, jets
+  // with contrails. All action stays left/centre so the REPORTED chip
+  // (top right, drawn after the art) never covers a jet.
   cv.fillRect(x, y, w, h, SEA);
-  // Deck tanks (white, ink outline).
-  for (const tx of [52, 104, 156]) {
-    cv.fillRect(x + tx, y + 14, 44, 12, WHITE);
-    cv.rect(x + tx, y + 14, 44, 12, 1, INK);
-  }
-  // Bridge + funnel, right.
-  cv.fillRect(x + 248, y + 14, 24, 12, [70, 76, 84]);
-  cv.fillRect(x + 252, y + 17, 5, 5, WHITE);
-  cv.fillRect(x + 236, y + 18, 8, 8, [40, 44, 50]);
-  // Fire over the middle tank, smaller fire over the left tank.
-  cv.fillCircle(x + 126, y + 8, 7, ORANGE);
-  cv.fillCircle(x + 126, y + 10, 4, [255, 220, 120]);
-  cv.fillCircle(x + 70, y + 10, 5, ORANGE);
-  cv.fillCircle(x + 70, y + 11, 2, [255, 220, 120]);
-  // Smoke.
-  cv.fillCircle(x + 118, y + 2, 5, [120, 124, 132]);
-  cv.fillCircle(x + 132, y + 0, 4, [150, 154, 162]);
-  // Hull with red waterline.
-  cv.fillRect(x + 24, y + 26, 252, 11, [40, 44, 50]);
-  cv.fillRect(x + 24, y + 34, 252, 3, RED);
-  // Mast + waves.
-  cv.vline(x + 30, y + 18, 8, 2, [40, 44, 50]);
+  // Clouds, top left.
+  cv.fillCircle(x + 20, y + 8, 4, WHITE);
+  cv.fillCircle(x + 28, y + 6, 3, WHITE);
+  // Ulleung island, bottom centre-right, inside a red alert ring.
+  cv.fillCircle(x + 195, y + 32, 12, RED);
+  cv.fillCircle(x + 195, y + 32, 9, SEA);
+  cv.polyFill([[x + 178, y + 40], [x + 186, y + 26], [x + 200, y + 24], [x + 212, y + 34], [x + 210, y + 40]], LAND);
+  // Jet 1, nose right, with tail fin and cockpit.
+  cv.polyFill([[x + 30, y + 12], [x + 62, y + 12], [x + 66, y + 15], [x + 30, y + 15]], WHITE);
+  cv.polyFill([[x + 44, y + 15], [x + 50, y + 15], [x + 46, y + 22], [x + 42, y + 22]], WHITE);
+  cv.polyFill([[x + 36, y + 12], [x + 40, y + 12], [x + 37, y + 6], [x + 35, y + 6]], WHITE);
+  cv.fillRect(x + 56, y + 11, 4, 2, NAVY);
+  // Jet 2, smaller, higher, same heading.
+  cv.polyFill([[x + 100, y + 6], [x + 124, y + 6], [x + 127, y + 9], [x + 100, y + 9]], WHITE);
+  cv.polyFill([[x + 110, y + 9], [x + 115, y + 9], [x + 112, y + 14], [x + 109, y + 14]], WHITE);
+  // Contrails behind both jets.
+  cv.hline(x + 8, y + 13, 20, 1, WHITE);
+  cv.hline(x + 80, y + 7, 18, 1, WHITE);
+  // Waves.
   cv.fillRect(x + 10, y + h - 3, 60, 2, WHITE);
-  cv.fillRect(x + 220, y + h - 3, 80, 2, WHITE);
+  cv.fillRect(x + 230, y + h - 3, 80, 2, WHITE);
 }
 
 function drawConfidenceHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
@@ -665,11 +681,10 @@ function drawCardIcon(cv: Canvas, n: number, x: number, y: number): void {
   const bgs: Record<number, RGB> = { 4: NAVY, 5: ORANGE, 6: GOLD, 7: TEAL, 8: NAVY, 9: GOLD, 10: RED, 11: NAVY, 12: SLATE, 13: TEAL, 14: RED, 15: ORANGE };
   cv.fillRect(x, y, 32, 32, bgs[n] ?? SLATE);
   if (n === 4) {
-    // Jet, side view, nose right.
-    cv.polyFill([[x + 4, y + 14], [x + 26, y + 14], [x + 28, y + 17], [x + 4, y + 17]], WHITE);
-    cv.polyFill([[x + 14, y + 17], [x + 20, y + 17], [x + 16, y + 24], [x + 12, y + 24]], WHITE);
-    cv.polyFill([[x + 6, y + 14], [x + 10, y + 14], [x + 7, y + 8], [x + 5, y + 8]], WHITE);
-    cv.fillRect(x + 22, y + 13, 4, 2, NAVY);
+    // Price tag (tariffs): white tag, hole, red stripe.
+    cv.polyFill([[x + 6, y + 10], [x + 20, y + 10], [x + 26, y + 16], [x + 20, y + 22], [x + 6, y + 22]], WHITE);
+    cv.fillCircle(x + 10, y + 16, 2, NAVY);
+    cv.fillRect(x + 14, y + 15, 7, 2, RED);
   } else if (n === 5) {
     // Explosion starburst.
     for (const [dx, dy] of [[0, -13], [9, -9], [13, 0], [9, 9], [0, 13], [-9, 9], [-13, 0], [-9, -9]] as Array<[number, number]>) {
@@ -814,7 +829,7 @@ function drawMasthead(cv: Canvas): void {
   cv.fillRect(M, 42, CW, 3, RED);
   drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 46, 28, INK, "B");
   drawTextCentered(cv, "37 STORIES - 9 REGIONS - ONE PAGE", W / 2, 78, 14, NAVY, "B");
-  const kicker = "IRGC CLAIMS 3 TANKERS ABLAZE - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE";
+  const kicker = "RUSSIAN JETS NEAR ULLEUNG - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE";
   const ks = fitSize(kicker, 19, CW, "B");
   drawTextCentered(cv, kicker, W / 2, 96, ks, RED, "B");
   cv.fillRect(M, 116, CW, 2, INK);
@@ -843,7 +858,7 @@ function drawRegions(cv: Canvas): void {
 
 function drawHero(cv: Canvas, s: Story, x: number, y0: number, w: number, h: number): void {
   cv.rect(x, y0, w, h, 2, INK);
-  if (s.n === 1) drawTankerHero(cv, x + 2, y0 + 2, w - 4, 42);
+  if (s.n === 1) drawJetsHero(cv, x + 2, y0 + 2, w - 4, 42);
   else if (s.n === 2) drawConfidenceHero(cv, x + 2, y0 + 2, w - 4, 42);
   else drawLibyaHero(cv, x + 2, y0 + 2, w - 4, 42);
   // Epistemic tag chip on the illustration.
@@ -902,14 +917,14 @@ function drawCard(cv: Canvas, s: Story, x: number, y0: number, w: number, h: num
 
 function drawBottom(cv: Canvas): void {
   const y0 = 610;
-  // Map column. v6: taller map (180, was 160); the dated-items box that
-  // used to sit below the legend is gone, so the column ends in paper.
+  // Map column. v6c: map taller again (230, was 180) so the left column
+  // no longer ends in a quarter-page of empty paper below the legend.
   drawText(cv, "WHERE IT HAPPENED", M, y0, 16, INK, "B");
-  drawMap(cv, M, y0 + 18, 280, 180, [...HEROES, ...CARDS]);
-  drawLines(cv, ["RED PINS = STORIES 1-15.", "POSITIONS APPROXIMATE."], M, y0 + 202, 14, 17, SLATE, "R");
+  drawMap(cv, M, y0 + 18, 280, 230, [...HEROES, ...CARDS]);
+  drawLines(cv, ["RED PINS = STORIES 1-15.", "POSITIONS APPROXIMATE."], M, y0 + 252, 14, 17, SLATE, "R");
   // Honesty legend, two lines in the map column below the caption.
-  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 236, 14, SLATE, "R");
-  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 253, 14, SLATE, "R");
+  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 286, 14, SLATE, "R");
+  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 303, 14, SLATE, "R");
   // Briefs column. v6: 15px type (was 14), row pitch 31 (was 32): the
   // last row ends at y938 + 29 = 967 (descenders included), clear of
   // the footer rule at y976.
