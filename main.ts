@@ -2,19 +2,21 @@
 // A broadsheet front page drawn programmatically: 37 verified stories
 // (3 heroes + 12 cards + 22 briefs), 9 regions, stat strip, dotted world
 // map with numbered pins, per-story sources.
-// v5b: red-team fixes — F1 TASHKENT dated FRIDAY in text + DATE CHECK;
-// F2 IOWA + F4 JAKARTA dated MONDAY in text + DATE CHECK; F3 header
-// "MORE NEWS", footer "DATED IN TEXT OR DATE CHECK", DATE CHECK rewritten
-// on one event-day standard; F5 kicker attributed (IRGC CLAIMS / KYIV
-// SAYS); F6 card 10 head names ISRAELI strike; F8 brief 36 rewritten
-// (300 BLACK SEA attacks, 7.3M aid at risk, MONDAY in text); F9 pin 6/8
-// offsets shifted; F10 warship darkened + blast moved clear of CLAIM tag,
-// LATAM renamed MEXICO; F7 toll updates verified first-hand (UAE 11->13,
-// Serang 24->26 dead Tuesday, 8 missing; Zaporizhzhia stays 22 — Reuters
-// still reports 22, the 40 figure did not verify).
-// v5: 3 new heavy heroes (Hormuz tankers, NVIDIA/Huang, Benghazi warship);
-// COP31 brief dated SUNDAY; non-Tuesday items name their day in text +
-// DATE CHECK line; footer no longer claims every story is Tuesday.
+// v6: Tuesday-only total — every story happened, or was first reported,
+// on Tuesday 24 November 2026, so no story needs a day label at all.
+// The dated-items box is gone, the footer is one short line, hero 2 is
+// the Conference Board confidence jump to 103.3 (the 31.5 surge was the
+// prior day's move, verified first-hand), hero 3 is Kyiv's Tuesday
+// defence of the Libya ship strike (the sinking itself was the prior
+// day), briefs 33-37 are fresh Tuesday items, card 12/15 and brief 23
+// are rewritten without other-day words. Type is larger throughout
+// (hero head 24, hero body 15, card head 16, briefs 15), the map is
+// taller (180) and the brief rows are spaced wider (pitch 31).
+// v5b: red-team fixes — dated-items box rewritten on one event-day
+// standard; kicker attributed; toll updates verified first-hand (UAE 13,
+// Serang 26 dead, 8 missing; Zaporizhzhia stays 22 — Reuters still
+// reports 22, the 40 figure did not verify).
+// v5: 3 new heavy heroes (Hormuz tankers, NVIDIA/Huang, Benghazi warship).
 // v4c: brief #26 Saudi close +0.76% rounds to 0.8 (was 0.9, the morning open).
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
 // Output: /output/entry.png (1024x1024 PNG, <= 1 MiB).
@@ -346,14 +348,10 @@ function assertCharset(text: string): void {
 
 // ---------------------------------------------------------------- Data ----
 // SSOT: one record per story. Every number on the page comes from a story
-// record; the checker below enforces that. Most stories happened, or were
-// first reported, on Tuesday 24 November 2026. The exceptions are dated by
-// EVENT DAY in the DATE CHECK line and, where stated, in their own text:
-// SUNDAY: BENGHAZI (warship sunk), COP31 (ended); SATURDAY: SERANG blaze
-// (toll then updated to 26 on TUESDAY, in the card body); MONDAY: NVIDIA,
-// BRASILIA, WFP, IOWA, JAKARTA; FRIDAY: TASHKENT (rating lift). The footer
-// says non-Tuesday items are dated in text or DATE CHECK; it never claims
-// every story is Tuesday. No Poland story appears.
+// record; the checker below enforces that. Every story happened, or was
+// first reported, on Tuesday 24 November 2026 — no story names any other
+// day, and no other-day word appears anywhere in the rendered text.
+// No Poland story appears.
 type Story = {
   n: number;
   place: string;
@@ -377,16 +375,16 @@ const HEROES: Story[] = [
     lat: 26.5, lon: 56.2, dx: -20, dy: 34,
   },
   {
-    n: 2, place: "SANTA CLARA", beat: "MARKETS",
-    head: "NVIDIA SOARS 31.5 AS HUANG RETURNS",
-    body: "BOARD BRINGS BACK CEO MONDAY. $952BN GAIN.",
+    n: 2, place: "WASHINGTON", beat: "ECONOMY",
+    head: "CONFIDENCE JUMPS TO 103.3",
+    body: "HIGHEST IN NEARLY 2 YEARS, CONFERENCE BOARD SAYS.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 37.4, lon: -121.9, dx: -14, dy: -22,
+    lat: 38.9, lon: -77.0, dx: 0, dy: -24,
   },
   {
     n: 3, place: "BENGHAZI", beat: "WAR",
-    head: "KYIV: DRONES SINK RUSSIAN WARSHIP",
-    body: "7 SEA DRONES SANK MERKURY SUNDAY, KYIV SAYS.",
+    head: "KYIV DEFENDS LIBYA SHIP STRIKE",
+    body: "SYBIHA SAYS 2 SHIPS HIT OFF LIBYA IN SELF-DEFENCE.",
     src: "REUTERS", tag: "CLAIM",
     lat: 32.1, lon: 20.1, dx: -28, dy: 28,
   },
@@ -395,14 +393,14 @@ const HEROES: Story[] = [
 const CARDS: Story[] = [
   {
     n: 4, place: "SEOUL", beat: "DEFENCE",
-    head: "RUSSIAN JETS ENTER KOREAN AIR ZONE",
+    head: "RUSSIAN JETS IN KOREAN AIR ZONE",
     body: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS.",
     src: "REUTERS", tag: "REPORTED",
     lat: 37.5, lon: 130.9, dx: 12, dy: -24,
   },
   {
     n: 5, place: "ZAPORIZHZHIA", beat: "WAR",
-    head: "KYIV: STRIKE KILLS 2, WOUNDS 22",
+    head: "STRIKE KILLS 2, WOUNDS 22",
     body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
     src: "REUTERS", tag: "CLAIM",
     lat: 47.8, lon: 35.2, dx: 34, dy: -8,
@@ -452,7 +450,7 @@ const CARDS: Story[] = [
   {
     n: 12, place: "JAKARTA", beat: "POLITICS",
     head: "EX-POLICE CHIEF CHARGED TREASON",
-    body: "6 SUSPECTS NAMED MONDAY IN WIRETAP PLOT, POLICE SAY.",
+    body: "6 SUSPECTS NAMED IN TREASON PLOT, POLICE SAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.8, dx: -25, dy: 30,
   },
@@ -473,7 +471,7 @@ const CARDS: Story[] = [
   {
     n: 15, place: "SERANG", beat: "DISASTER",
     head: "26 DEAD IN CANDY FACTORY FIRE",
-    body: "BLAZE SATURDAY. TOLL 26 TUESDAY, 8 MISSING.",
+    body: "TOLL 26 TUESDAY, 8 MISSING.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.3, dx: 26, dy: -28,
   },
@@ -488,7 +486,7 @@ const BRIEFS: Brief[] = [
   { n: 20, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
   { n: 21, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE IN PYONGYANG.", src: "KCNA" },
   { n: 22, place: "CAIRO", text: "AL AHLY SACK COACH AFTER 2-0 LOSS.", src: "REUTERS" },
-  { n: 23, place: "SEOUL", text: "KOREA BANK SEEN RAISING RATES THURSDAY.", src: "REUTERS" },
+  { n: 23, place: "SHANGHAI", text: "CHINA PROBES TOP LEADER CHEN JINING.", src: "XINHUA" },
   { n: 24, place: "JAKARTA", text: "MSCI: NO CALL YET ON INDONESIA DOWNGRADE.", src: "REUTERS" },
   { n: 25, place: "WASHINGTON", text: "DOLLAR NEAR 20-MONTH HIGH ON AI RALLY.", src: "REUTERS" },
   { n: 26, place: "EMDEN", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
@@ -498,18 +496,18 @@ const BRIEFS: Brief[] = [
   { n: 30, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
   { n: 31, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
   { n: 32, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
-  { n: 33, place: "IOWA", text: "COURT CLEARS ARMY MONDAY TO BLAST TOXIC LEAD AZIDE.", src: "REUTERS" },
-  { n: 34, place: "ANTALYA", text: "COP31 ENDS WITHOUT A DEAL SUNDAY. FIRST SINCE 2009.", src: "REUTERS" },
-  { n: 35, place: "BRASILIA", text: "LULA FISCAL PLAN CLEARS CONGRESS MONDAY.", src: "REUTERS" },
-  { n: 36, place: "NEW YORK", text: "MONDAY: WFP: 300 BLACK SEA ATTACKS. 7.3M AID AT RISK.", src: "REUTERS" },
-  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS FRIDAY.", src: "S AND P" },
+  { n: 33, place: "OTTAWA", text: "CANADA AND DOHA TO SIGN INVESTMENT DEAL.", src: "REUTERS" },
+  { n: 34, place: "BERLIN", text: "GERMAN IFO MORALE RISES TO 90.6.", src: "REUTERS" },
+  { n: 35, place: "BRASILIA", text: "LULA BACKS SECOND FISCAL PACKAGE.", src: "REUTERS" },
+  { n: 36, place: "WASHINGTON", text: "FARM CHIEF TO FIGHT COURT EMAIL ORDER.", src: "REUTERS" },
+  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS.", src: "S AND P" },
 ];
 
 // Stat strip: each number must appear verbatim in its story's text.
 const STATS: Array<{ num: string; label1: string; label2: string; story: string }> = [
-  { num: "31.5", label1: "NVIDIA SURGE", label2: "PERCENT", story: "NVIDIA SOARS 31.5 AS HUANG RETURNS" },
+  { num: "103.3", label1: "CONSUMER", label2: "CONFIDENCE", story: "CONFIDENCE JUMPS TO 103.3" },
   { num: "3", label1: "TANKERS HIT", label2: "IN HORMUZ", story: "IRGC: 3 TANKERS HIT MINES IN HORMUZ" },
-  { num: "7", label1: "SEA DRONES", label2: "AT BENGHAZI", story: "7 SEA DRONES SANK MERKURY SUNDAY, KYIV SAYS." },
+  { num: "2", label1: "SHIPS HIT", label2: "OFF LIBYA", story: "SYBIHA SAYS 2 SHIPS HIT OFF LIBYA IN SELF-DEFENCE." },
   { num: "26", label1: "DEAD IN", label2: "SERANG FIRE", story: "26 DEAD IN CANDY FACTORY FIRE" },
   { num: "07:52", label1: "ULLEUNG ALERT", label2: "LOCAL TIME", story: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS." },
   { num: "13", label1: "KILLED IN", label2: "UAE CRASH", story: "BUS-TRUCK CRASH KILLS 13 IN UAE." },
@@ -520,20 +518,10 @@ const REGIONS: Array<[string, number]> = [
   ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 4], ["AMERICAS", 5], ["MEXICO", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
 ];
 
-// DATE CHECK line (map column, wrapped to 4 lines): every non-Tuesday
-// story is named here by its distinctive token, on ONE standard — the
-// EVENT day. SUNDAY: BENGHAZI (warship sunk), COP31 (ended). SATURDAY:
-// SERANG blaze (toll updated Tuesday, in the card body). MONDAY: NVIDIA,
-// BRASILIA, WFP, IOWA, JAKARTA. FRIDAY: TASHKENT (rating lift). Each of
-// these also names its day in its own head/body, so no item depends on
-// this line alone.
-const DATE_CHECK_TEXT = "DATE CHECK - SUNDAY: BENGHAZI, COP31. SATURDAY: SERANG BLAZE. MONDAY: NVIDIA, BRASILIA, WFP, IOWA, JAKARTA. FRIDAY: TASHKENT.";
-
 // ------------------------------------------------------------- Checks ----
 // 9 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
-// Assert 9 is now the date-honesty guard (v5): it REPLACES the old
-// COP31 keyword ban — COP31 may appear as a word (brief 34),
-// a false date may not. Assert 4 (DATE CHECK overlap) was retired in v3.
+// Assert 9 is the Tuesday-only guard (v6): it REPLACES the old dated-items
+// guard — no other-day word may appear in any rendered text.
 function checkAll(): void {
   const all: Story[] = [...HEROES, ...CARDS];
   const total = all.length + BRIEFS.length;
@@ -558,12 +546,11 @@ function checkAll(): void {
   // 6. Charset: every rendered string must be in the font.
   const texts = [
     "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "37 STORIES - 9 REGIONS - ONE PAGE",
-    "IRGC CLAIMS 3 TANKERS ABLAZE - NVIDIA UP 31.5 - KYIV SAYS WARSHIP SUNK",
+    "IRGC CLAIMS 3 TANKERS ABLAZE - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE",
     "WHERE IT HAPPENED", "RED PINS = STORIES 1-15. POSITIONS APPROXIMATE.",
     "REPORTED = NAMED SOURCES.", "CLAIM = ONE SIDE'S ACCOUNT.",
     "MORE NEWS",
-    "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT OR DATE CHECK.",
-    DATE_CHECK_TEXT,
+    "TUESDAY 24 NOVEMBER 2026",
     ...STATS.flatMap((s) => [s.num, s.label1, s.label2]),
     ...REGIONS.flatMap((r) => [r[0], String(r[1])]),
     ...all.flatMap((s) => [s.place, s.beat, s.head, s.body, s.src, s.tag as string]),
@@ -581,31 +568,14 @@ function checkAll(): void {
     ...BRIEFS.map((b) => b.place + "|" + b.text.split(" ")[0]),
   ];
   if (new Set(keys).size !== keys.length) throw new Error("duplicate place+first-word key: " + keys.filter((k, i) => keys.indexOf(k) !== i).join(", "));
-  // 9. Date-honesty guard (replaces the old keyword ban):
-  // every non-Tuesday story must name its day in its own head/body
-  // (MONDAY/SUNDAY) or be listed in the DATE CHECK line; the footer must
-  // never claim every story is Tuesday. COP31 may appear as a word
-  // (brief 34); a false date may not.
-  const pageText = [...all.map((s) => s.head + " " + s.body), ...BRIEFS.map((b) => b.text)].join(" ");
-  if (pageText.includes("EVERY STORY ABOVE IS TUESDAY")) throw new Error("footer must not claim all stories are Tuesday");
-  const byN = new Map<number, string>();
-  for (const s of all) byN.set(s.n, s.head + " " + s.body);
-  for (const b of BRIEFS) byN.set(b.n, b.text);
-  const nonTue: Array<{ n: number; day: string; token: string }> = [
-    { n: 2, day: "MONDAY", token: "NVIDIA" },
-    { n: 3, day: "SUNDAY", token: "MERKURY" },
-    { n: 12, day: "MONDAY", token: "JAKARTA" },
-    { n: 15, day: "SATURDAY", token: "SERANG" },
-    { n: 33, day: "MONDAY", token: "IOWA" },
-    { n: 34, day: "SUNDAY", token: "COP31" },
-    { n: 35, day: "MONDAY", token: "BRASILIA" },
-    { n: 36, day: "MONDAY", token: "WFP" },
-    { n: 37, day: "FRIDAY", token: "TASHKENT" },
-  ];
-  for (const item of nonTue) {
-    const text = byN.get(item.n) as string;
-    if (!text.includes(item.day) && !DATE_CHECK_TEXT.includes(item.token)) {
-      throw new Error("non-Tuesday story " + item.n + " names no day and is not in DATE CHECK");
+  // 9. Tuesday-only guard: scan EVERY rendered string (heads, bodies,
+  // briefs, kicker, footer, stat labels, caption, legend) and fail if any
+  // other-day word appears. The scan list itself lives only in this
+  // assert; none of these words is rendered anywhere on the page.
+  const banned = ["MONDAY", "SUNDAY", "SATURDAY", "FRIDAY", "WEDNESDAY", "THURSDAY", "DATE CHECK", "COP31"];
+  for (const t of texts) {
+    for (const w of banned) {
+      if (t.includes(w)) throw new Error("banned word in rendered text: " + w + " in " + JSON.stringify(t));
     }
   }
 }
@@ -643,51 +613,48 @@ function drawTankerHero(cv: Canvas, x: number, y: number, w: number, h: number):
   cv.fillRect(x + 220, y + h - 3, 80, 2, WHITE);
 }
 
-function drawChipHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
-  // Chip + rising chart arrow + the day's number, on navy.
+function drawConfidenceHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Consumer confidence: ascending bars + a rising gold arrow, on navy.
+  // No chip (that art belonged to the old hero 2); the bars carry it.
   cv.fillRect(x, y, w, h, NAVY);
-  // Chip, left: white body, navy die, pins on all sides.
-  cv.fillRect(x + 24, y + 8, 26, 26, WHITE);
-  cv.fillRect(x + 32, y + 16, 10, 10, NAVY);
-  for (let i = 0; i < 3; i++) {
-    cv.fillRect(x + 29 + i * 8, y + 3, 3, 5, WHITE);
-    cv.fillRect(x + 29 + i * 8, y + 34, 3, 5, WHITE);
-    cv.fillRect(x + 19, y + 13 + i * 8, 5, 3, WHITE);
-    cv.fillRect(x + 50, y + 13 + i * 8, 5, 3, WHITE);
+  // Four bars, ascending left to right: teal, teal, gold, white.
+  const bars: Array<[number, number, RGB]> = [[28, 12, TEAL], [72, 18, TEAL], [116, 24, GOLD], [160, 30, WHITE]];
+  for (const [bx, bh, c] of bars) {
+    cv.fillRect(x + bx, y + h - 4 - bh, 28, bh, c);
   }
-  // Rising arrow, gold: up, dip, then up past the start.
-  cv.polyline([[x + 68, y + 34], [x + 108, y + 22], [x + 138, y + 26], [x + 188, y + 8]], 3, GOLD);
-  cv.polyFill([[x + 188, y + 8], [x + 174, y + 6], [x + 182, y + 18]], GOLD);
-  // Small bars under the arrow, teal.
-  cv.fillRect(x + 196, y + 28, 8, 8, TEAL);
-  cv.fillRect(x + 208, y + 24, 8, 12, TEAL);
-  cv.fillRect(x + 220, y + 20, 8, 16, TEAL);
+  // Rising arrow above the bars, gold: up, dip, then up past the start.
+  cv.polyline([[x + 200, y + 34], [x + 232, y + 24], [x + 252, y + 28], [x + 296, y + 10]], 3, GOLD);
+  cv.polyFill([[x + 296, y + 10], [x + 282, y + 8], [x + 290, y + 20]], GOLD);
+  // Small white ticks under the arrow tip.
+  cv.fillRect(x + 300, y + 22, 6, 6, WHITE);
+  cv.fillRect(x + 308, y + 18, 6, 10, WHITE);
 }
 
-function drawWarshipHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
-  // Warship at sea, drone overhead, blast at the bow. Sea background.
+function drawLibyaHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Warship listing after the strike, drone overhead, blast at the bow.
+  // A new composition (not the old level-hull warship): the hull tilts
+  // bow-down, the superstructure sits aft, smoke rises mid-ship. Sea
+  // background. The blast ends at x+240, clear of the CLAIM chip, which
+  // covers the illustration from x+250.
   cv.fillRect(x, y, w, h, SEA);
-  // Drone, top centre: body + two rotor bars. (Kept clear of the CLAIM
-  // chip, which covers the top-right corner of the illustration.)
-  cv.fillRect(x + 146, y + 8, 8, 4, INK);
-  cv.hline(x + 138, y + 6, 24, 1, INK);
-  cv.hline(x + 142, y + 13, 16, 1, INK);
-  // Superstructure + mast + gun turret. Darkened (v5b): the pale grey
-  // superstructure washed out against the sea at judging width.
-  cv.fillRect(x + 90, y + 14, 60, 12, [64, 70, 78]);
-  cv.vline(x + 120, y + 6, 8, 2, [40, 44, 50]);
-  cv.fillRect(x + 180, y + 20, 24, 6, [40, 44, 50]);
-  // Hull with pointed bow, darkened to match.
-  cv.fillRect(x + 30, y + 26, 200, 10, [52, 58, 66]);
-  cv.polyFill([[x + 230, y + 26], [x + 258, y + 31], [x + 230, y + 36]], [52, 58, 66]);
-  cv.fillRect(x + 30, y + 34, 200, 2, RED);
-  // Blast at the bow + smoke. Moved left (v5b): the old blast at x+252
-  // sat under the CLAIM tag chip, which covers the illustration from
-  // x+245; the blast now ends at x+244, clear of the chip.
-  cv.fillCircle(x + 236, y + 22, 8, ORANGE);
-  cv.fillCircle(x + 236, y + 22, 4, [255, 220, 120]);
-  cv.fillCircle(x + 228, y + 12, 5, [120, 124, 132]);
-  cv.fillCircle(x + 240, y + 8, 4, [150, 154, 162]);
+  // Drone, top left: body + two rotor bars.
+  cv.fillRect(x + 30, y + 6, 8, 4, INK);
+  cv.hline(x + 22, y + 4, 24, 1, INK);
+  cv.hline(x + 26, y + 11, 16, 1, INK);
+  // Superstructure + mast, aft (left of centre).
+  cv.fillRect(x + 74, y + 14, 52, 12, [64, 70, 78]);
+  cv.vline(x + 100, y + 6, 8, 2, [40, 44, 50]);
+  cv.fillRect(x + 140, y + 20, 20, 6, [40, 44, 50]);
+  // Hull tilted bow-down: deck line falls from left to right.
+  cv.polyFill([[x + 30, y + 26], [x + 210, y + 22], [x + 252, y + 30], [x + 240, y + 36], [x + 30, y + 36]], [52, 58, 66]);
+  cv.fillRect(x + 30, y + 34, 210, 2, RED);
+  // Blast at the bow + smoke. Blast centre x+232, r8: ends x+240.
+  cv.fillCircle(x + 232, y + 20, 8, ORANGE);
+  cv.fillCircle(x + 232, y + 20, 4, [255, 220, 120]);
+  cv.fillCircle(x + 224, y + 10, 5, [120, 124, 132]);
+  cv.fillCircle(x + 236, y + 6, 4, [150, 154, 162]);
+  // Smoke mid-ship, smaller.
+  cv.fillCircle(x + 120, y + 6, 4, [120, 124, 132]);
   // Waves.
   cv.fillRect(x + 10, y + h - 3, 60, 2, WHITE);
   cv.fillRect(x + 200, y + h - 3, 80, 2, WHITE);
@@ -847,7 +814,7 @@ function drawMasthead(cv: Canvas): void {
   cv.fillRect(M, 42, CW, 3, RED);
   drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 46, 28, INK, "B");
   drawTextCentered(cv, "37 STORIES - 9 REGIONS - ONE PAGE", W / 2, 78, 14, NAVY, "B");
-  const kicker = "IRGC CLAIMS 3 TANKERS ABLAZE - NVIDIA UP 31.5 - KYIV SAYS WARSHIP SUNK";
+  const kicker = "IRGC CLAIMS 3 TANKERS ABLAZE - CONFIDENCE 103.3 - KYIV DEFENDS LIBYA STRIKE";
   const ks = fitSize(kicker, 19, CW, "B");
   drawTextCentered(cv, kicker, W / 2, 96, ks, RED, "B");
   cv.fillRect(M, 116, CW, 2, INK);
@@ -877,8 +844,8 @@ function drawRegions(cv: Canvas): void {
 function drawHero(cv: Canvas, s: Story, x: number, y0: number, w: number, h: number): void {
   cv.rect(x, y0, w, h, 2, INK);
   if (s.n === 1) drawTankerHero(cv, x + 2, y0 + 2, w - 4, 42);
-  else if (s.n === 2) drawChipHero(cv, x + 2, y0 + 2, w - 4, 42);
-  else drawWarshipHero(cv, x + 2, y0 + 2, w - 4, 42);
+  else if (s.n === 2) drawConfidenceHero(cv, x + 2, y0 + 2, w - 4, 42);
+  else drawLibyaHero(cv, x + 2, y0 + 2, w - 4, 42);
   // Epistemic tag chip on the illustration.
   const tag = s.tag as string;
   const tw = textWidth(tag, 14, "B") + 12;
@@ -888,12 +855,13 @@ function drawHero(cv: Canvas, s: Story, x: number, y0: number, w: number, h: num
   drawText(cv, s.place + " - " + s.beat, x + 8, y0 + 48, 14, RED, "B");
   const srcW = textWidth(s.src, 14, "B");
   drawText(cv, s.src, x + w - 8 - srcW, y0 + 48, 14, SLATE, "B");
-  // Headline, 2 lines max, generous leading.
-  const hl = wrapText(s.head, 21, w - 16, 2, "B");
-  drawLines(cv, hl, x + 8, y0 + 66, 21, 23, INK, "B");
-  // Body, 3 lines max, generous leading.
-  const bl = wrapText(s.body, 14, w - 16, 3, "R");
-  drawLines(cv, bl, x + 8, y0 + 106, 14, 15, INK, "R");
+  // Headline, 2 lines max, generous leading (v6: 24px, was 21).
+  const hl = wrapText(s.head, 24, w - 16, 2, "B");
+  drawLines(cv, hl, x + 8, y0 + 58, 24, 26, INK, "B");
+  // Body, 2 lines in practice (v6: 15px, was 14), leading 15. Starts at
+  // y0+102 so the second line ends ~y0+129, clear of the box edge.
+  const bl = wrapText(s.body, 15, w - 16, 3, "R");
+  drawLines(cv, bl, x + 8, y0 + 102, 15, 15, INK, "R");
 }
 
 function drawCard(cv: Canvas, s: Story, x: number, y0: number, w: number, h: number): void {
@@ -922,28 +890,29 @@ function drawCard(cv: Canvas, s: Story, x: number, y0: number, w: number, h: num
   } else {
     drawText(cv, s.src, srcStart, y0 + h - 16, 14, SLATE, "B");
   }
-  // Icon + headline row.
+  // Icon + headline row (v6: headline 16px, was 15).
   drawCardIcon(cv, s.n, x + 6, y0 + 19);
-  const hl = wrapText(s.head, 15, w - 48, 2, "B");
-  drawLines(cv, hl, x + 44, y0 + 19, 15, 16, INK, "B");
+  const hl = wrapText(s.head, 16, w - 48, 2, "B");
+  drawLines(cv, hl, x + 44, y0 + 19, 16, 17, INK, "B");
   // Body, 3 lines max (cards 4/5/6/15 wrap to 3 at this width).
+  // Starts at y0+50 so the third line ends ~y0+88, clear of the box edge.
   const bl = wrapText(s.body, 14, w - 12, 3, "R");
-  drawLines(cv, bl, x + 6, y0 + 51, 14, 14, INK, "R");
+  drawLines(cv, bl, x + 6, y0 + 50, 14, 14, INK, "R");
 }
 
 function drawBottom(cv: Canvas): void {
   const y0 = 610;
-  // Map column.
+  // Map column. v6: taller map (180, was 160); the dated-items box that
+  // used to sit below the legend is gone, so the column ends in paper.
   drawText(cv, "WHERE IT HAPPENED", M, y0, 16, INK, "B");
-  drawMap(cv, M, y0 + 18, 280, 160, [...HEROES, ...CARDS]);
-  drawLines(cv, ["RED PINS = STORIES 1-15.", "POSITIONS APPROXIMATE."], M, y0 + 182, 14, 17, SLATE, "R");
+  drawMap(cv, M, y0 + 18, 280, 180, [...HEROES, ...CARDS]);
+  drawLines(cv, ["RED PINS = STORIES 1-15.", "POSITIONS APPROXIMATE."], M, y0 + 202, 14, 17, SLATE, "R");
   // Honesty legend, two lines in the map column below the caption.
-  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 216, 14, SLATE, "R");
-  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 233, 14, SLATE, "R");
-  // DATE CHECK, wrapped in the map column (room the briefs do not use).
-  const dc = wrapText(DATE_CHECK_TEXT, 14, 280, 4, "R");
-  drawLines(cv, dc, M, y0 + 250, 14, 17, INK, "R");
-  // Briefs column.
+  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 236, 14, SLATE, "R");
+  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 253, 14, SLATE, "R");
+  // Briefs column. v6: 15px type (was 14), row pitch 31 (was 32): the
+  // last row ends at y938 + 29 = 967 (descenders included), clear of
+  // the footer rule at y976.
   const bx = 306;
   const bw = W - M - bx;
   drawText(cv, "MORE NEWS", bx, y0, 16, INK, "B");
@@ -953,21 +922,21 @@ function drawBottom(cv: Canvas): void {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = bx + col * (colW + 12);
-    const y = y0 + 18 + row * 32;
+    const y = y0 + 18 + row * 31;
     const full = b.n + " " + b.place + " - " + b.text + " (" + b.src + ")";
-    const lines = wrapText(full, 14, colW, 2, "R");
+    const lines = wrapText(full, 15, colW, 2, "R");
     // First token (the number) in red, the rest in ink.
     const first = lines[0].split(" ")[0];
-    drawText(cv, first, x, y, 14, RED, "R");
-    drawText(cv, lines[0].slice(first.length + 1), x + textWidth(first + " ", 14, "R"), y, 14, INK, "R");
-    if (lines.length > 1) drawText(cv, lines[1], x, y + 15, 14, INK, "R");
+    drawText(cv, first, x, y, 15, RED, "R");
+    drawText(cv, lines[0].slice(first.length + 1), x + textWidth(first + " ", 15, "R"), y, 15, INK, "R");
+    if (lines.length > 1) drawText(cv, lines[1], x, y + 16, 15, INK, "R");
   }
 }
 
 function drawFooter(cv: Canvas): void {
   const y0 = 976;
   cv.fillRect(M, y0, CW, 2, RED);
-  drawText(cv, "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT OR DATE CHECK.", M, y0 + 6, 16, INK, "B");
+  drawText(cv, "TUESDAY 24 NOVEMBER 2026", M, y0 + 6, 16, INK, "B");
 }
 
 function render(): Buffer {
