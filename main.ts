@@ -1,7 +1,7 @@
 // news-image-20261124 — "The World Today: Tuesday 24 November 2026"
 // A broadsheet front page drawn programmatically: 25 verified stories
 // (3 heroes + 8 cards + 14 briefs), 6 regions, stat strip, dotted world
-// map with numbered pins, DATE CHECK exclusions, per-story sources.
+// map with numbered pins, per-story sources.
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
 // Output: /output/entry.png (1024x1024 PNG, <= 1 MiB).
 //
@@ -334,12 +334,10 @@ function assertCharset(text: string): void {
 // SSOT: one record per story. Every number on the page comes from a story
 // record; the checker below enforces that. All stories happened, or were
 // first reported, on Tuesday 24 November 2026 by local dateline (Reuters
-// .../2026-11-24/ URLs or "on Tuesday" in the wire text). Anything that
-// broke earlier lives ONLY in DATE_CHECK, never on the page. No story is
-// dated by "some time zone": Monday 23 Nov wires are excluded outright.
-// Region counts (ASIA 9, EUROPE 8, MIDEAST 2, AMERICAS 2, AFRICA 3,
-// OCEANIA 1) are hand-counted from the places below; assert 2 re-checks
-// the sum. No Poland story and no COP31 story appear on the page.
+// .../2026-11-24/ URLs or "on Tuesday" in the wire text). Every story on
+// the page broke on Tuesday; nothing from an earlier day appears.
+// No story is dated by "some time zone": Monday 23 Nov wires are excluded
+// outright. No Poland story and no COP31 story appear on the page.
 type Story = {
   n: number;
   place: string;
@@ -372,7 +370,7 @@ const HEROES: Story[] = [
   {
     n: 3, place: "ZAPORIZHZHIA", beat: "WAR",
     head: "KYIV: STRIKE KILLS 2, WOUNDS 22",
-    body: "RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
+    body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
     src: "REUTERS", tag: "CLAIM",
     lat: 47.8, lon: 35.2, dx: 25, dy: 8,
   },
@@ -402,7 +400,7 @@ const CARDS: Story[] = [
   },
   {
     n: 7, place: "KHAN YOUNIS", beat: "WAR",
-    head: "STRIKE KILLS 3 IN KHAN YOUNIS",
+    head: "STRIKE KILLS AT LEAST 3",
     body: "3 DEAD NEAR POLICE POST, MEDICS SAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: 31.5, lon: 34.4, dx: -28, dy: 30,
@@ -444,7 +442,7 @@ const BRIEFS: Brief[] = [
   { n: 14, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 11 IN UAE.", src: "REUTERS" },
   { n: 15, place: "WASHINGTON", text: "US HOLDS UP 60 PATRIOT MISSILES FOR KYIV.", src: "FT" },
   { n: 16, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
-  { n: 17, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE.", src: "KCNA" },
+  { n: 17, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE IN PYONGYANG.", src: "KCNA" },
   { n: 18, place: "CAIRO", text: "AL AHLY SACK COACH AFTER 2-0 LOSS.", src: "REUTERS" },
   { n: 19, place: "SEOUL", text: "KOREA BANK SEEN RAISING RATES THURSDAY.", src: "REUTERS" },
   { n: 20, place: "JAKARTA", text: "MSCI: NO CALL YET ON INDONESIA DOWNGRADE.", src: "REUTERS" },
@@ -470,16 +468,11 @@ const REGIONS: Array<[string, number]> = [
   ["ASIA", 9], ["EUROPE", 8], ["MIDEAST", 2], ["AMERICAS", 2], ["AFRICA", 3], ["OCEANIA", 1],
 ];
 
-// DATE CHECK: stories that broke BEFORE Tuesday — excluded on purpose.
-const DATE_CHECK: string =
-  "COP31 NO-DEAL (22 NOV), DEMOCRATS 258 (22 NOV), ALCARAZ (22 NOV), " +
-  "INDONESIA FIRE (21 NOV), MODI IIT PATNA (21 NOV), ICJ MYANMAR (19 NOV), " +
-  "G20 JOHANNESBURG 2025";
-
 // ------------------------------------------------------------- Checks ----
-// 7 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
-// Plus assert 8 (anti-duplication) and 9 (no page story is a DATE CHECK
-// item by keyword): the v1a checker was blind to both failures.
+// 8 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
+// Assert 4 (DATE CHECK overlap) was retired in v3 with the DATE CHECK
+// section itself; assert 8 (anti-duplication) and 9 (no COP31/Poland
+// story on the page) remain: the v1a checker was blind to both failures.
 function checkAll(): void {
   const all: Story[] = [...HEROES, ...CARDS];
   const total = all.length + BRIEFS.length;
@@ -495,11 +488,6 @@ function checkAll(): void {
   for (const s of STATS) {
     if (!s.story.includes(s.num)) throw new Error("stat " + s.num + " not found in its story");
   }
-  // 4. No DATE CHECK item appears as a page story (keyword overlap).
-  const pageText = [...all.map((s) => s.head + " " + s.body), ...BRIEFS.map((b) => b.text)].join(" ");
-  for (const bad of ["COP31 NO-DEAL", "258 SEATS", "ALCARAZ", "INDONESIA FIRE", "IIT PATNA", "ICJ MYANMAR", "G20 JOHANNESBURG"]) {
-    if (pageText.includes(bad)) throw new Error("DATE CHECK item on page: " + bad);
-  }
   // 5. Every story has a named source; CLAIM only where single-sourced.
   for (const s of all) {
     if (!s.src) throw new Error("story " + s.n + " has no source");
@@ -513,10 +501,8 @@ function checkAll(): void {
     "WHERE IT HAPPENED", "RED PINS = STORIES 1-11. POSITIONS APPROXIMATE.",
     "REPORTED = NAMED SOURCES. CLAIM = ONE SIDE'S ACCOUNT.",
     "ALSO ON TUESDAY",
-    "DATE CHECK - LEFT OUT ON PURPOSE. THEY BROKE BEFORE TUESDAY.",
     "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.",
     "15:00",
-    DATE_CHECK,
     ...STATS.flatMap((s) => [s.num, s.label1, s.label2]),
     ...REGIONS.flatMap((r) => [r[0], String(r[1])]),
     ...all.flatMap((s) => [s.place, s.beat, s.head, s.body, s.src, s.tag as string]),
@@ -534,11 +520,12 @@ function checkAll(): void {
     ...BRIEFS.map((b) => b.place + "|" + b.text.split(" ")[0]),
   ];
   if (new Set(keys).size !== keys.length) throw new Error("duplicate place+first-word key: " + keys.filter((k, i) => keys.indexOf(k) !== i).join(", "));
-  // 9. No page story is also a DATE CHECK item by keyword: COP31 and
-  // Poland must not appear anywhere on the page (v1a had COP31 as both a
-  // brief and an excluded item, and Poland as two stories).
+  // 9. No COP31 or Poland story on the page: v1a had COP31 as both a
+  // brief and an excluded item, and Poland as two stories. (No DATE CHECK
+  // list remains in v3; this guard stands on its own.)
+  const pageText = [...all.map((s) => s.head + " " + s.body), ...BRIEFS.map((b) => b.text)].join(" ");
   for (const bad of ["COP31", "POLAND"]) {
-    if (pageText.includes(bad)) throw new Error("DATE CHECK keyword on page: " + bad);
+    if (pageText.includes(bad)) throw new Error("COP31/Poland keyword on page: " + bad);
   }
 }
 
@@ -848,11 +835,11 @@ function drawBottom(cv: Canvas): void {
   const y0 = 646;
   // Map column.
   drawText(cv, "WHERE IT HAPPENED", M, y0, 16, INK, "B");
-  drawMap(cv, M, y0 + 20, 280, 180, [...HEROES, ...CARDS]);
-  drawLines(cv, ["RED PINS = STORIES 1-11.", "POSITIONS APPROXIMATE."], M, y0 + 204, 14, 17, SLATE, "R");
+  drawMap(cv, M, y0 + 20, 280, 200, [...HEROES, ...CARDS]);
+  drawLines(cv, ["RED PINS = STORIES 1-11.", "POSITIONS APPROXIMATE."], M, y0 + 224, 14, 17, SLATE, "R");
   // Honesty legend, full width below both columns (the map column is too
   // narrow for it: the line would run into the briefs).
-  drawText(cv, "REPORTED = NAMED SOURCES. CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 272, 14, SLATE, "R");
+  drawText(cv, "REPORTED = NAMED SOURCES. CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 298, 14, SLATE, "R");
   // Briefs column.
   const bx = 306;
   const bw = W - M - bx;
@@ -863,7 +850,7 @@ function drawBottom(cv: Canvas): void {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = bx + col * (colW + 12);
-    const y = y0 + 20 + row * 36;
+    const y = y0 + 20 + row * 40;
     const full = b.n + " " + b.place + " - " + b.text + " (" + b.src + ")";
     const lines = wrapText(full, 14, colW, 2, "R");
     // First token (the number) in red, the rest in ink.
@@ -874,13 +861,10 @@ function drawBottom(cv: Canvas): void {
   }
 }
 
-function drawDateCheck(cv: Canvas): void {
-  const y0 = 940;
+function drawFooter(cv: Canvas): void {
+  const y0 = 968;
   cv.fillRect(M, y0, CW, 2, RED);
-  drawText(cv, "DATE CHECK - LEFT OUT ON PURPOSE. THEY BROKE BEFORE TUESDAY.", M, y0 + 6, 16, RED, "B");
-  drawText(cv, "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.", M, y0 + 26, 16, INK, "B");
-  const lines = wrapText(DATE_CHECK, 14, CW, 2, "R");
-  drawLines(cv, lines, M, y0 + 48, 14, 17, SLATE, "R");
+  drawText(cv, "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.", M, y0 + 6, 16, INK, "B");
 }
 
 function render(): Buffer {
@@ -900,7 +884,7 @@ function render(): Buffer {
     drawCard(cv, CARDS[i], M + col * (cw + 8), 430 + row * 108, cw, 104);
   }
   drawBottom(cv);
-  drawDateCheck(cv);
+  drawFooter(cv);
   return encodePng(W, H, cv.px);
 }
 

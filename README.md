@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/news-image-20261124/zxpast/makefun-news-image-20261124/rank.svg)](https://make.fun/bounty/news-image-20261124)
 [![reward](https://make.fun/badge/news-image-20261124/zxpast/makefun-news-image-20261124/reward.svg)](https://make.fun/bounty/news-image-20261124)
 
-One broadsheet image summing up Tuesday 24 November 2026's world news: 25 verified stories — the Ulleung Island airspace scare, the World Chess Championship opener in Geneva, NATO's AWACS deployment to Poland, and 22 more — with a stat strip, a region strip, a world map with numbered pins, and a DATE CHECK footer listing the near-misses that broke on other days.
+One broadsheet image summing up Tuesday 24 November 2026's world news: 25 verified stories — the Ulleung Island airspace scare, the World Chess Championship opener in Geneva, the Zaporizhzhia strike, and 22 more — with a stat strip, a region strip, and a world map with numbered pins.
 
 ## Run
 
