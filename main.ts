@@ -1,6 +1,7 @@
 // news-image-20261124 — "The World Today: Tuesday 24 November 2026"
 // A broadsheet front page drawn programmatically: 28 verified stories
 // (3 heroes + 8 cards + 17 briefs), 7 regions, stat strip, dotted world
+// v4c: brief #26 Saudi close +0.76% rounds to 0.8 (was 0.9, the morning open).
 // map with numbered pins, per-story sources.
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
 // Output: /output/entry.png (1024x1024 PNG, <= 1 MiB).
@@ -451,7 +452,7 @@ const BRIEFS: Brief[] = [
   { n: 23, place: "FRANKFURT", text: "GERMAN BANK PAY TALKS STALL TO JAN 20.", src: "REUTERS" },
   { n: 24, place: "CAPE TOWN", text: "PEPKOR WARNS PORT SNARLS HIT TRADE.", src: "REUTERS" },
   { n: 25, place: "LONDON", text: "EUROPE EARNINGS BOOM AT 4-YEAR HIGH.", src: "REUTERS" },
-  { n: 26, place: "RIYADH", text: "SAUDI STOCKS UP 0.9 ON TUESDAY.", src: "REUTERS" },
+  { n: 26, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
   { n: 27, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
   { n: 28, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
 ];
