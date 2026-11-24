@@ -1,6 +1,6 @@
 // news-image-20261124 — "The World Today: Tuesday 24 November 2026"
-// A broadsheet front page drawn programmatically: 25 verified stories
-// (3 heroes + 8 cards + 14 briefs), 6 regions, stat strip, dotted world
+// A broadsheet front page drawn programmatically: 28 verified stories
+// (3 heroes + 8 cards + 17 briefs), 7 regions, stat strip, dotted world
 // map with numbered pins, per-story sources.
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
 // Output: /output/entry.png (1024x1024 PNG, <= 1 MiB).
@@ -372,7 +372,7 @@ const HEROES: Story[] = [
     head: "KYIV: STRIKE KILLS 2, WOUNDS 22",
     body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
     src: "REUTERS", tag: "CLAIM",
-    lat: 47.8, lon: 35.2, dx: 25, dy: 8,
+    lat: 47.8, lon: 35.2, dx: -12, dy: -10,
   },
 ];
 
@@ -438,7 +438,7 @@ const CARDS: Story[] = [
 type Brief = { n: number; place: string; text: string; src: string };
 const BRIEFS: Brief[] = [
   { n: 12, place: "KATHMANDU", text: "M5.3 TREMOR HITS NEPAL, FELT IN INDIA.", src: "REUTERS" },
-  { n: 13, place: "BEIJING", text: "SHENZHOU-24 SET TO FLY, 1ST FOREIGN ASTRONAUT.", src: "REUTERS" },
+  { n: 13, place: "MEXICO CITY", text: "MEXICO INFLATION AT 3.96 IN NOVEMBER.", src: "INEGI" },
   { n: 14, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 11 IN UAE.", src: "REUTERS" },
   { n: 15, place: "WASHINGTON", text: "US HOLDS UP 60 PATRIOT MISSILES FOR KYIV.", src: "FT" },
   { n: 16, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
@@ -447,10 +447,13 @@ const BRIEFS: Brief[] = [
   { n: 19, place: "SEOUL", text: "KOREA BANK SEEN RAISING RATES THURSDAY.", src: "REUTERS" },
   { n: 20, place: "JAKARTA", text: "MSCI: NO CALL YET ON INDONESIA DOWNGRADE.", src: "REUTERS" },
   { n: 21, place: "WASHINGTON", text: "DOLLAR NEAR 20-MONTH HIGH ON AI RALLY.", src: "REUTERS" },
-  { n: 22, place: "WOLFSBURG", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
+  { n: 22, place: "EMDEN", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
   { n: 23, place: "FRANKFURT", text: "GERMAN BANK PAY TALKS STALL TO JAN 20.", src: "REUTERS" },
   { n: 24, place: "CAPE TOWN", text: "PEPKOR WARNS PORT SNARLS HIT TRADE.", src: "REUTERS" },
   { n: 25, place: "LONDON", text: "EUROPE EARNINGS BOOM AT 4-YEAR HIGH.", src: "REUTERS" },
+  { n: 26, place: "RIYADH", text: "SAUDI STOCKS UP 0.9 ON TUESDAY.", src: "REUTERS" },
+  { n: 27, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
+  { n: 28, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
 ];
 
 // Stat strip: each number must appear verbatim in its story's text.
@@ -463,9 +466,9 @@ const STATS: Array<{ num: string; label1: string; label2: string; story: string 
   { num: "18", label1: "GAS DEAL", label2: "YEARS", story: "NORWAY SIGNS 18-YEAR GAS DEAL" },
 ];
 
-// Region strip: must sum to the story total (25) and span 6 regions.
+// Region strip: must sum to the story total (28) and span 7 regions.
 const REGIONS: Array<[string, number]> = [
-  ["ASIA", 9], ["EUROPE", 8], ["MIDEAST", 2], ["AMERICAS", 2], ["AFRICA", 3], ["OCEANIA", 1],
+  ["ASIA", 9], ["EUROPE", 8], ["MIDEAST", 3], ["AMERICAS", 2], ["LATAM", 1], ["AFRICA", 4], ["OCEANIA", 1],
 ];
 
 // ------------------------------------------------------------- Checks ----
@@ -476,14 +479,14 @@ const REGIONS: Array<[string, number]> = [
 function checkAll(): void {
   const all: Story[] = [...HEROES, ...CARDS];
   const total = all.length + BRIEFS.length;
-  if (total !== 25) throw new Error("story total must be 25, got " + total);
-  // 1. Numbers unique and 1..25, in order.
+  if (total !== 28) throw new Error("story total must be 28, got " + total);
+  // 1. Numbers unique and 1..28, in order.
   const nums = [...all.map((s) => s.n), ...BRIEFS.map((b) => b.n)];
-  for (let i = 0; i < nums.length; i++) if (nums[i] !== i + 1) throw new Error("story numbers not 1..25 in order at " + i);
+  for (let i = 0; i < nums.length; i++) if (nums[i] !== i + 1) throw new Error("story numbers not 1..28 in order at " + i);
   // 2. Region strip sums to the total.
   const rsum = REGIONS.reduce((a, r) => a + r[1], 0);
   if (rsum !== total) throw new Error("region strip sums to " + rsum + ", stories " + total);
-  if (REGIONS.length < 6) throw new Error("need >= 6 regions");
+  if (REGIONS.length < 7) throw new Error("need >= 7 regions");
   // 3. Every stat number appears verbatim in its story.
   for (const s of STATS) {
     if (!s.story.includes(s.num)) throw new Error("stat " + s.num + " not found in its story");
@@ -496,10 +499,10 @@ function checkAll(): void {
   for (const b of BRIEFS) if (!b.src) throw new Error("brief " + b.n + " has no source");
   // 6. Charset: every rendered string must be in the font.
   const texts = [
-    "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "25 STORIES - 6 REGIONS - ONE PAGE",
+    "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "28 STORIES - 7 REGIONS - ONE PAGE",
     "KOREA JET SCARE - CHESS CROWN ON THE LINE - ZAPORIZHZHIA HIT",
     "WHERE IT HAPPENED", "RED PINS = STORIES 1-11. POSITIONS APPROXIMATE.",
-    "REPORTED = NAMED SOURCES. CLAIM = ONE SIDE'S ACCOUNT.",
+    "REPORTED = NAMED SOURCES.", "CLAIM = ONE SIDE'S ACCOUNT.",
     "ALSO ON TUESDAY",
     "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.",
     "15:00",
@@ -747,7 +750,7 @@ function drawMasthead(cv: Canvas): void {
   drawTextCentered(cv, "THE WORLD TODAY", W / 2, 8, 36, INK, "B");
   cv.fillRect(M, 52, CW, 3, RED);
   drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 58, 28, INK, "B");
-  drawTextCentered(cv, "25 STORIES - 6 REGIONS - ONE PAGE", W / 2, 92, 14, NAVY, "B");
+  drawTextCentered(cv, "28 STORIES - 7 REGIONS - ONE PAGE", W / 2, 92, 14, NAVY, "B");
   const kicker = "KOREA JET SCARE - CHESS CROWN ON THE LINE - ZAPORIZHZHIA HIT";
   const ks = fitSize(kicker, 19, CW, "B");
   drawTextCentered(cv, kicker, W / 2, 112, ks, RED, "B");
@@ -837,9 +840,10 @@ function drawBottom(cv: Canvas): void {
   drawText(cv, "WHERE IT HAPPENED", M, y0, 16, INK, "B");
   drawMap(cv, M, y0 + 20, 280, 200, [...HEROES, ...CARDS]);
   drawLines(cv, ["RED PINS = STORIES 1-11.", "POSITIONS APPROXIMATE."], M, y0 + 224, 14, 17, SLATE, "R");
-  // Honesty legend, full width below both columns (the map column is too
-  // narrow for it: the line would run into the briefs).
-  drawText(cv, "REPORTED = NAMED SOURCES. CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 298, 14, SLATE, "R");
+  // Honesty legend, two lines in the map column below the caption (v4:
+  // moved out of the full-width slot so the briefs have room to reflow).
+  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 262, 14, SLATE, "R");
+  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 279, 14, SLATE, "R");
   // Briefs column.
   const bx = 306;
   const bw = W - M - bx;
@@ -850,7 +854,7 @@ function drawBottom(cv: Canvas): void {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = bx + col * (colW + 12);
-    const y = y0 + 20 + row * 40;
+    const y = y0 + 20 + row * 34;
     const full = b.n + " " + b.place + " - " + b.text + " (" + b.src + ")";
     const lines = wrapText(full, 14, colW, 2, "R");
     // First token (the number) in red, the rest in ink.
@@ -862,7 +866,7 @@ function drawBottom(cv: Canvas): void {
 }
 
 function drawFooter(cv: Canvas): void {
-  const y0 = 968;
+  const y0 = 976;
   cv.fillRect(M, y0, CW, 2, RED);
   drawText(cv, "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.", M, y0 + 6, 16, INK, "B");
 }
