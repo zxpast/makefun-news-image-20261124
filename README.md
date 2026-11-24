@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/news-image-20261124/zxpast/makefun-news-image-20261124/rank.svg)](https://make.fun/bounty/news-image-20261124)
 [![reward](https://make.fun/badge/news-image-20261124/zxpast/makefun-news-image-20261124/reward.svg)](https://make.fun/bounty/news-image-20261124)
 
-One broadsheet image summing up Tuesday 24 November 2026's world news: 25 verified stories — the Ulleung Island airspace scare, the World Chess Championship opener in Geneva, the Zaporizhzhia strike, and 22 more — with a stat strip, a region strip, and a world map with numbered pins.
+One broadsheet image summing up Tuesday 24 November 2026's world news: 28 verified stories — the Ulleung Island airspace scare, the World Chess Championship opener in Geneva, the Zaporizhzhia strike, and 25 more — with a stat strip, a region strip (7 regions), and a world map with numbered pins.
 
 ## Run
 
