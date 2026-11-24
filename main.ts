@@ -1,8 +1,11 @@
 // news-image-20261124 — "The World Today: Tuesday 24 November 2026"
-// A broadsheet front page drawn programmatically: 28 verified stories
-// (3 heroes + 8 cards + 17 briefs), 7 regions, stat strip, dotted world
-// v4c: brief #26 Saudi close +0.76% rounds to 0.8 (was 0.9, the morning open).
+// A broadsheet front page drawn programmatically: 37 verified stories
+// (3 heroes + 12 cards + 22 briefs), 9 regions, stat strip, dotted world
 // map with numbered pins, per-story sources.
+// v5: 3 new heavy heroes (Hormuz tankers, NVIDIA/Huang, Benghazi warship);
+// COP31 brief dated SUNDAY; non-Tuesday items name their day in text +
+// DATE CHECK line; footer no longer claims every story is Tuesday.
+// v4c: brief #26 Saudi close +0.76% rounds to 0.8 (was 0.9, the morning open).
 // Node 22, stdlib only, no network, deterministic (2 runs byte-identical).
 // Output: /output/entry.png (1024x1024 PNG, <= 1 MiB).
 //
@@ -334,11 +337,11 @@ function assertCharset(text: string): void {
 // ---------------------------------------------------------------- Data ----
 // SSOT: one record per story. Every number on the page comes from a story
 // record; the checker below enforces that. All stories happened, or were
-// first reported, on Tuesday 24 November 2026 by local dateline (Reuters
-// .../2026-11-24/ URLs or "on Tuesday" in the wire text). Every story on
-// the page broke on Tuesday; nothing from an earlier day appears.
-// No story is dated by "some time zone": Monday 23 Nov wires are excluded
-// outright. No Poland story and no COP31 story appear on the page.
+// first reported, on Tuesday 24 November 2026, EXCEPT the items named in
+// the DATE CHECK line: NVIDIA, BENGHAZI, SERANG, BRASILIA and WFP broke
+// MONDAY, COP31 ended SUNDAY. Each of those names its day in its own
+// head/body (MONDAY/SUNDAY) or is listed in DATE CHECK; the footer no
+// longer claims every story is Tuesday. No Poland story appears.
 type Story = {
   n: number;
   place: string;
@@ -355,139 +358,177 @@ type Story = {
 
 const HEROES: Story[] = [
   {
-    n: 1, place: "SEOUL", beat: "DEFENCE",
-    head: "RUSSIAN JETS ENTER KOREAN AIR ZONE",
-    body: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS.",
-    src: "REUTERS", tag: "REPORTED",
-    lat: 37.5, lon: 130.9, dx: 10, dy: -22,
-  },
-  {
-    n: 2, place: "GENEVA", beat: "SPORT",
-    head: "YOUNGEST TITLE MATCH BEGINS",
-    body: "GUKESH DEFENDS CROWN VS SINDAROV. GAME 1 TODAY, 14 GAMES, $2.5M.",
-    src: "FIDE", tag: "REPORTED",
-    lat: 46.2, lon: 6.1, dx: 9, dy: -38,
-  },
-  {
-    n: 3, place: "ZAPORIZHZHIA", beat: "WAR",
-    head: "KYIV: STRIKE KILLS 2, WOUNDS 22",
-    body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
+    n: 1, place: "HORMUZ", beat: "WAR",
+    head: "IRGC: 3 TANKERS HIT MINES IN HORMUZ",
+    body: "TEHRAN CLAIMS MINES SET 3 ABLAZE. UNVERIFIED.",
     src: "REUTERS", tag: "CLAIM",
-    lat: 47.8, lon: 35.2, dx: -12, dy: -10,
+    lat: 26.5, lon: 56.2, dx: -20, dy: 34,
+  },
+  {
+    n: 2, place: "SANTA CLARA", beat: "MARKETS",
+    head: "NVIDIA SOARS 31.5 AS HUANG RETURNS",
+    body: "BOARD BRINGS BACK CEO MONDAY. $952BN GAIN.",
+    src: "REUTERS", tag: "REPORTED",
+    lat: 37.4, lon: -121.9, dx: -14, dy: -22,
+  },
+  {
+    n: 3, place: "BENGHAZI", beat: "WAR",
+    head: "KYIV: DRONES SINK RUSSIAN WARSHIP",
+    body: "7 SEA DRONES SANK MERKURY SUNDAY, KYIV SAYS.",
+    src: "REUTERS", tag: "CLAIM",
+    lat: 32.1, lon: 20.1, dx: -28, dy: 28,
   },
 ];
 
 const CARDS: Story[] = [
   {
-    n: 4, place: "OSLO", beat: "ENERGY",
+    n: 4, place: "SEOUL", beat: "DEFENCE",
+    head: "RUSSIAN JETS ENTER KOREAN AIR ZONE",
+    body: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS.",
+    src: "REUTERS", tag: "REPORTED",
+    lat: 37.5, lon: 130.9, dx: 12, dy: -24,
+  },
+  {
+    n: 5, place: "ZAPORIZHZHIA", beat: "WAR",
+    head: "KYIV: STRIKE KILLS 2, WOUNDS 22",
+    body: "KYIV SAYS RUSSIAN ATTACK HIT ZAPORIZHZHIA OVERNIGHT.",
+    src: "REUTERS", tag: "CLAIM",
+    lat: 47.8, lon: 35.2, dx: 34, dy: -8,
+  },
+  {
+    n: 6, place: "GENEVA", beat: "SPORT",
+    head: "YOUNGEST TITLE MATCH BEGINS",
+    body: "GUKESH DEFENDS CROWN VS SINDAROV. GAME 1 TODAY, 14 GAMES, $2.5M.",
+    src: "FIDE", tag: "REPORTED",
+    lat: 46.2, lon: 6.1, dx: 28, dy: 22,
+  },
+  {
+    n: 7, place: "OSLO", beat: "ENERGY",
     head: "NORWAY SIGNS 18-YEAR GAS DEAL",
     body: "TO SUPPLY GERMANY 15.3 TWH A YEAR.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 59.9, lon: 10.7, dx: -22, dy: -28,
+    lat: 59.9, lon: 10.7, dx: -30, dy: -14,
   },
   {
-    n: 5, place: "TAIPEI", beat: "MARKETS",
+    n: 8, place: "TAIPEI", beat: "MARKETS",
     head: "ASIA STOCKS LEAP ON HUANG RETURN",
     body: "TAIWAN UP 9.1, KOSPI UP 7.5, NIKKEI UP 4.5.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 25.0, lon: 121.6, dx: -25, dy: 35,
+    lat: 25.0, lon: 121.6, dx: -14, dy: 36,
   },
   {
-    n: 6, place: "BERLIN", beat: "EU",
+    n: 9, place: "BERLIN", beat: "EU",
     head: "GERMANY TOP EU NET PAYER",
     body: "PAID 14.9BN MORE THAN RECEIVED.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 52.5, lon: 13.4, dx: 32, dy: -13,
+    lat: 52.5, lon: 13.4, dx: 30, dy: -20,
   },
   {
-    n: 7, place: "KHAN YOUNIS", beat: "WAR",
+    n: 10, place: "KHAN YOUNIS", beat: "WAR",
     head: "STRIKE KILLS AT LEAST 3",
     body: "3 DEAD NEAR POLICE POST, MEDICS SAY.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 31.5, lon: 34.4, dx: -28, dy: 30,
+    lat: 31.5, lon: 34.4, dx: 30, dy: 26,
   },
   {
-    n: 8, place: "BRUSSELS", beat: "EUROPE",
+    n: 11, place: "BRUSSELS", beat: "EUROPE",
     head: "EV SURGE LIFTS EUROPE CAR SALES",
     body: "SALES UP 3.4, ELECTRIC UP 56.1.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 50.8, lon: 4.4, dx: -29, dy: -15,
+    lat: 50.8, lon: 4.4, dx: -32, dy: 18,
   },
   {
-    n: 9, place: "JAKARTA", beat: "POLITICS",
+    n: 12, place: "JAKARTA", beat: "POLITICS",
     head: "EX-POLICE CHIEF CHARGED TREASON",
     body: "6 SUSPECTS IN WIRETAP PLOT, POLICE SAY.",
     src: "REUTERS", tag: "REPORTED",
-    lat: -6.2, lon: 106.8, dx: -25, dy: 35,
+    lat: -6.2, lon: 106.8, dx: -25, dy: 30,
   },
   {
-    n: 10, place: "DHAKA", beat: "POLITICS",
+    n: 13, place: "DHAKA", beat: "POLITICS",
     head: "HASINA PLANS RETURN DEC 16",
     body: "EXILED EX-PM TO FLY HOME, AIDE SAYS.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 23.8, lon: 90.4, dx: 10, dy: 14,
+    lat: 23.8, lon: 90.4, dx: 24, dy: -26,
   },
   {
-    n: 11, place: "HONIARA", beat: "PACIFIC",
+    n: 14, place: "HONIARA", beat: "PACIFIC",
     head: "SOLOMONS TO DROP CHINA PACT",
     body: "TO END 2022 DEAL, TURN TO AUSTRALIA.",
     src: "REUTERS", tag: "REPORTED",
-    lat: -9.4, lon: 160.0, dx: -14, dy: -22,
+    lat: -9.4, lon: 160.0, dx: -8, dy: 28,
+  },
+  {
+    n: 15, place: "SERANG", beat: "DISASTER",
+    head: "24 DEAD IN CANDY FACTORY FIRE",
+    body: "BLAZE SATURDAY. TOLL CONFIRMED MONDAY, 30 MISSING.",
+    src: "REUTERS", tag: "REPORTED",
+    lat: -6.2, lon: 106.3, dx: 26, dy: -28,
   },
 ];
 
 type Brief = { n: number; place: string; text: string; src: string };
 const BRIEFS: Brief[] = [
-  { n: 12, place: "KATHMANDU", text: "M5.3 TREMOR HITS NEPAL, FELT IN INDIA.", src: "REUTERS" },
-  { n: 13, place: "MEXICO CITY", text: "MEXICO INFLATION AT 3.96 IN NOVEMBER.", src: "INEGI" },
-  { n: 14, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 11 IN UAE.", src: "REUTERS" },
-  { n: 15, place: "WASHINGTON", text: "US HOLDS UP 60 PATRIOT MISSILES FOR KYIV.", src: "FT" },
-  { n: 16, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
-  { n: 17, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE IN PYONGYANG.", src: "KCNA" },
-  { n: 18, place: "CAIRO", text: "AL AHLY SACK COACH AFTER 2-0 LOSS.", src: "REUTERS" },
-  { n: 19, place: "SEOUL", text: "KOREA BANK SEEN RAISING RATES THURSDAY.", src: "REUTERS" },
-  { n: 20, place: "JAKARTA", text: "MSCI: NO CALL YET ON INDONESIA DOWNGRADE.", src: "REUTERS" },
-  { n: 21, place: "WASHINGTON", text: "DOLLAR NEAR 20-MONTH HIGH ON AI RALLY.", src: "REUTERS" },
-  { n: 22, place: "EMDEN", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
-  { n: 23, place: "FRANKFURT", text: "GERMAN BANK PAY TALKS STALL TO JAN 20.", src: "REUTERS" },
-  { n: 24, place: "CAPE TOWN", text: "PEPKOR WARNS PORT SNARLS HIT TRADE.", src: "REUTERS" },
-  { n: 25, place: "LONDON", text: "EUROPE EARNINGS BOOM AT 4-YEAR HIGH.", src: "REUTERS" },
-  { n: 26, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
-  { n: 27, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
-  { n: 28, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
+  { n: 16, place: "KATHMANDU", text: "M5.3 TREMOR HITS NEPAL, FELT IN INDIA.", src: "REUTERS" },
+  { n: 17, place: "MEXICO CITY", text: "MEXICO INFLATION AT 3.96 IN NOVEMBER.", src: "INEGI" },
+  { n: 18, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 11 IN UAE.", src: "REUTERS" },
+  { n: 19, place: "WASHINGTON", text: "US HOLDS UP 60 PATRIOT MISSILES FOR KYIV.", src: "FT" },
+  { n: 20, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
+  { n: 21, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE IN PYONGYANG.", src: "KCNA" },
+  { n: 22, place: "CAIRO", text: "AL AHLY SACK COACH AFTER 2-0 LOSS.", src: "REUTERS" },
+  { n: 23, place: "SEOUL", text: "KOREA BANK SEEN RAISING RATES THURSDAY.", src: "REUTERS" },
+  { n: 24, place: "JAKARTA", text: "MSCI: NO CALL YET ON INDONESIA DOWNGRADE.", src: "REUTERS" },
+  { n: 25, place: "WASHINGTON", text: "DOLLAR NEAR 20-MONTH HIGH ON AI RALLY.", src: "REUTERS" },
+  { n: 26, place: "EMDEN", text: "VW FACES UNION OVER COSTS, STRIKE THREAT.", src: "REUTERS" },
+  { n: 27, place: "FRANKFURT", text: "GERMAN BANK PAY TALKS STALL TO JAN 20.", src: "REUTERS" },
+  { n: 28, place: "CAPE TOWN", text: "PEPKOR WARNS PORT SNARLS HIT TRADE.", src: "REUTERS" },
+  { n: 29, place: "LONDON", text: "EUROPE EARNINGS BOOM AT 4-YEAR HIGH.", src: "REUTERS" },
+  { n: 30, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
+  { n: 31, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
+  { n: 32, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
+  { n: 33, place: "IOWA", text: "COURT CLEARS ARMY TO BLAST TOXIC LEAD AZIDE.", src: "REUTERS" },
+  { n: 34, place: "ANTALYA", text: "COP31 ENDS WITHOUT A DEAL SUNDAY. FIRST SINCE 2009.", src: "REUTERS" },
+  { n: 35, place: "BRASILIA", text: "LULA FISCAL PLAN CLEARS CONGRESS MONDAY.", src: "REUTERS" },
+  { n: 36, place: "NEW YORK", text: "WFP: 300 SHIP ATTACKS PUT 7.3M AT RISK.", src: "REUTERS" },
+  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS.", src: "S AND P" },
 ];
 
 // Stat strip: each number must appear verbatim in its story's text.
 const STATS: Array<{ num: string; label1: string; label2: string; story: string }> = [
+  { num: "31.5", label1: "NVIDIA SURGE", label2: "PERCENT", story: "NVIDIA SOARS 31.5 AS HUANG RETURNS" },
+  { num: "3", label1: "TANKERS HIT", label2: "IN HORMUZ", story: "IRGC: 3 TANKERS HIT MINES IN HORMUZ" },
+  { num: "7", label1: "SEA DRONES", label2: "AT BENGHAZI", story: "7 SEA DRONES SANK MERKURY SUNDAY, KYIV SAYS." },
+  { num: "24", label1: "DEAD IN", label2: "SERANG FIRE", story: "24 DEAD IN CANDY FACTORY FIRE" },
   { num: "07:52", label1: "ULLEUNG ALERT", label2: "LOCAL TIME", story: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS." },
-  { num: "$2.5M", label1: "CHESS PRIZE", label2: "FUND", story: "GUKESH DEFENDS CROWN VS SINDAROV. GAME 1 TODAY, 14 GAMES, $2.5M." },
-  { num: "22", label1: "WOUNDED IN", label2: "ZAPORIZHZHIA", story: "KYIV: STRIKE KILLS 2, WOUNDS 22" },
   { num: "11", label1: "KILLED IN", label2: "UAE CRASH", story: "BUS-TRUCK CRASH KILLS 11 IN UAE." },
-  { num: "5.3", label1: "NEPAL TREMOR", label2: "MAGNITUDE", story: "M5.3 TREMOR HITS NEPAL, FELT IN INDIA." },
-  { num: "18", label1: "GAS DEAL", label2: "YEARS", story: "NORWAY SIGNS 18-YEAR GAS DEAL" },
 ];
 
 // Region strip: must sum to the story total (28) and span 7 regions.
 const REGIONS: Array<[string, number]> = [
-  ["ASIA", 9], ["EUROPE", 8], ["MIDEAST", 3], ["AMERICAS", 2], ["LATAM", 1], ["AFRICA", 4], ["OCEANIA", 1],
+  ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 4], ["AMERICAS", 5], ["LATAM", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
 ];
 
+// DATE CHECK line (map column, wrapped): every non-Tuesday story is named
+// here by its distinctive token, and each names its day in its own text
+// except WFP, which is dated by this line alone.
+const DATE_CHECK_TEXT = "DATE CHECK - MONDAY: NVIDIA, BENGHAZI, SERANG, BRASILIA, WFP. SUNDAY: COP31.";
+
 // ------------------------------------------------------------- Checks ----
-// 8 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
-// Assert 4 (DATE CHECK overlap) was retired in v3 with the DATE CHECK
-// section itself; assert 8 (anti-duplication) and 9 (no COP31/Poland
-// story on the page) remain: the v1a checker was blind to both failures.
+// 9 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
+// Assert 9 is now the date-honesty guard (v5): it REPLACES the old
+// COP31 keyword ban — COP31 may appear as a word (brief 34),
+// a false date may not. Assert 4 (DATE CHECK overlap) was retired in v3.
 function checkAll(): void {
   const all: Story[] = [...HEROES, ...CARDS];
   const total = all.length + BRIEFS.length;
-  if (total !== 28) throw new Error("story total must be 28, got " + total);
-  // 1. Numbers unique and 1..28, in order.
+  if (total !== 37) throw new Error("story total must be 37, got " + total);
+  // 1. Numbers unique and 1..37, in order.
   const nums = [...all.map((s) => s.n), ...BRIEFS.map((b) => b.n)];
-  for (let i = 0; i < nums.length; i++) if (nums[i] !== i + 1) throw new Error("story numbers not 1..28 in order at " + i);
+  for (let i = 0; i < nums.length; i++) if (nums[i] !== i + 1) throw new Error("story numbers not 1..37 in order at " + i);
   // 2. Region strip sums to the total.
   const rsum = REGIONS.reduce((a, r) => a + r[1], 0);
   if (rsum !== total) throw new Error("region strip sums to " + rsum + ", stories " + total);
-  if (REGIONS.length < 7) throw new Error("need >= 7 regions");
+  if (REGIONS.length !== 9) throw new Error("need 9 regions, got " + REGIONS.length);
   // 3. Every stat number appears verbatim in its story.
   for (const s of STATS) {
     if (!s.story.includes(s.num)) throw new Error("stat " + s.num + " not found in its story");
@@ -500,13 +541,13 @@ function checkAll(): void {
   for (const b of BRIEFS) if (!b.src) throw new Error("brief " + b.n + " has no source");
   // 6. Charset: every rendered string must be in the font.
   const texts = [
-    "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "28 STORIES - 7 REGIONS - ONE PAGE",
-    "KOREA JET SCARE - CHESS CROWN ON THE LINE - ZAPORIZHZHIA HIT",
-    "WHERE IT HAPPENED", "RED PINS = STORIES 1-11. POSITIONS APPROXIMATE.",
+    "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "37 STORIES - 9 REGIONS - ONE PAGE",
+    "TANKERS ABLAZE IN HORMUZ - NVIDIA UP 31.5 - WARSHIP SUNK OFF LIBYA",
+    "WHERE IT HAPPENED", "RED PINS = STORIES 1-15. POSITIONS APPROXIMATE.",
     "REPORTED = NAMED SOURCES.", "CLAIM = ONE SIDE'S ACCOUNT.",
     "ALSO ON TUESDAY",
-    "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.",
-    "15:00",
+    "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT.",
+    DATE_CHECK_TEXT,
     ...STATS.flatMap((s) => [s.num, s.label1, s.label2]),
     ...REGIONS.flatMap((r) => [r[0], String(r[1])]),
     ...all.flatMap((s) => [s.place, s.beat, s.head, s.body, s.src, s.tag as string]),
@@ -524,118 +565,146 @@ function checkAll(): void {
     ...BRIEFS.map((b) => b.place + "|" + b.text.split(" ")[0]),
   ];
   if (new Set(keys).size !== keys.length) throw new Error("duplicate place+first-word key: " + keys.filter((k, i) => keys.indexOf(k) !== i).join(", "));
-  // 9. No COP31 or Poland story on the page: v1a had COP31 as both a
-  // brief and an excluded item, and Poland as two stories. (No DATE CHECK
-  // list remains in v3; this guard stands on its own.)
+  // 9. Date-honesty guard (replaces the old keyword ban):
+  // every non-Tuesday story must name its day in its own head/body
+  // (MONDAY/SUNDAY) or be listed in the DATE CHECK line; the footer must
+  // never claim every story is Tuesday. COP31 may appear as a word
+  // (brief 34); a false date may not.
   const pageText = [...all.map((s) => s.head + " " + s.body), ...BRIEFS.map((b) => b.text)].join(" ");
-  for (const bad of ["COP31", "POLAND"]) {
-    if (pageText.includes(bad)) throw new Error("COP31/Poland keyword on page: " + bad);
+  if (pageText.includes("EVERY STORY ABOVE IS TUESDAY")) throw new Error("footer must not claim all stories are Tuesday");
+  const byN = new Map<number, string>();
+  for (const s of all) byN.set(s.n, s.head + " " + s.body);
+  for (const b of BRIEFS) byN.set(b.n, b.text);
+  const nonTue: Array<{ n: number; day: string; token: string }> = [
+    { n: 2, day: "MONDAY", token: "NVIDIA" },
+    { n: 3, day: "SUNDAY", token: "MERKURY" },
+    { n: 15, day: "MONDAY", token: "SERANG" },
+    { n: 34, day: "SUNDAY", token: "COP31" },
+    { n: 35, day: "MONDAY", token: "BRASILIA" },
+    { n: 36, day: "MONDAY", token: "WFP" },
+  ];
+  for (const item of nonTue) {
+    const text = byN.get(item.n) as string;
+    if (!text.includes(item.day) && !DATE_CHECK_TEXT.includes(item.token)) {
+      throw new Error("non-Tuesday story " + item.n + " names no day and is not in DATE CHECK");
+    }
   }
 }
 
 // -------------------------------------------------------------- Icons ----
 // Flat vector illustrations, drawn from simple shapes. No photos, no
 // copied art. Each hero gets its own scene; each card a small icon.
-function drawJetHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+function drawTankerHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Tanker ablaze in the strait: dark hull, white deck tanks, orange fire
+  // over two tanks, grey smoke rising. Sea background, 42px tall.
   cv.fillRect(x, y, w, h, SEA);
-  // Island (green) with a shelter roofline.
-  cv.polyFill([[x + 8, y + h - 6], [x + 60, y + h - 34], [x + 130, y + h - 40], [x + 210, y + h - 26], [x + 300, y + h - 10], [x + 316, y + h - 6]], [96, 140, 82]);
-  cv.fillRect(x + 120, y + h - 52, 44, 12, [255, 255, 255]);
-  cv.polyFill([[x + 116, y + h - 52], [x + 142, y + h - 66], [x + 168, y + h - 52]], RED);
-  // Jet, side view, nose right: long fuselage, swept main wing, tail fin,
-  // cockpit canopy, twin exhausts + contrail. Reads as a jet, not a blob.
-  cv.line(x + 60, y + 22, x + 205, y + 20, 2, WHITE);
-  // Fuselage: pointed nose to tail.
-  cv.polyFill([[x + 210, y + 26], [x + 292, y + 32], [x + 292, y + 38], [x + 210, y + 40], [x + 204, y + 33]], [70, 76, 84]);
-  // Main wing: swept back from mid-fuselage.
-  cv.polyFill([[x + 232, y + 34], [x + 252, y + 34], [x + 228, y + 56], [x + 214, y + 56]], [90, 96, 104]);
-  // Tail fin: swept up at the rear.
-  cv.polyFill([[x + 212, y + 32], [x + 224, y + 32], [x + 214, y + 14], [x + 206, y + 14]], [90, 96, 104]);
-  // Tailplane.
-  cv.polyFill([[x + 210, y + 38], [x + 222, y + 38], [x + 212, y + 50], [x + 204, y + 50]], [90, 96, 104]);
-  // Cockpit canopy.
-  cv.polyFill([[x + 262, y + 30], [x + 278, y + 30], [x + 272, y + 24], [x + 266, y + 24]], [30, 58, 95]);
-  // Twin exhausts.
-  cv.fillRect(x + 202, y + 29, 8, 3, [40, 44, 50]);
-  cv.fillRect(x + 202, y + 36, 8, 3, [40, 44, 50]);
-  // Warning triangle with "!".
-  cv.polyFill([[x + 18, y + 12], [x + 52, y + 12], [x + 35, y + 52]], [255, 196, 0]);
-  cv.rect(x + 18, y + 12, 34, 40, 2, INK);
-  drawText(cv, "!", x + 30, y + 18, 20, INK, "B");
+  // Deck tanks (white, ink outline).
+  for (const tx of [52, 104, 156]) {
+    cv.fillRect(x + tx, y + 14, 44, 12, WHITE);
+    cv.rect(x + tx, y + 14, 44, 12, 1, INK);
+  }
+  // Bridge + funnel, right.
+  cv.fillRect(x + 248, y + 14, 24, 12, [70, 76, 84]);
+  cv.fillRect(x + 252, y + 17, 5, 5, WHITE);
+  cv.fillRect(x + 236, y + 18, 8, 8, [40, 44, 50]);
+  // Fire over the middle tank, smaller fire over the left tank.
+  cv.fillCircle(x + 126, y + 8, 7, ORANGE);
+  cv.fillCircle(x + 126, y + 10, 4, [255, 220, 120]);
+  cv.fillCircle(x + 70, y + 10, 5, ORANGE);
+  cv.fillCircle(x + 70, y + 11, 2, [255, 220, 120]);
+  // Smoke.
+  cv.fillCircle(x + 118, y + 2, 5, [120, 124, 132]);
+  cv.fillCircle(x + 132, y + 0, 4, [150, 154, 162]);
+  // Hull with red waterline.
+  cv.fillRect(x + 24, y + 26, 252, 11, [40, 44, 50]);
+  cv.fillRect(x + 24, y + 34, 252, 3, RED);
+  // Mast + waves.
+  cv.vline(x + 30, y + 18, 8, 2, [40, 44, 50]);
+  cv.fillRect(x + 10, y + h - 3, 60, 2, WHITE);
+  cv.fillRect(x + 220, y + h - 3, 80, 2, WHITE);
 }
 
-function drawChessHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
-  cv.fillRect(x, y, w, h, CREAM2);
-  // 4x4 checkerboard, left.
-  const bs = 15;
-  const bx = x + 10;
-  const by = y + 4;
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      cv.fillRect(bx + c * bs, by + r * bs, bs, bs, (r + c) % 2 === 0 ? INK : WHITE);
-    }
+function drawChipHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Chip + rising chart arrow + the day's number, on navy.
+  cv.fillRect(x, y, w, h, NAVY);
+  // Chip, left: white body, navy die, pins on all sides.
+  cv.fillRect(x + 24, y + 8, 26, 26, WHITE);
+  cv.fillRect(x + 32, y + 16, 10, 10, NAVY);
+  for (let i = 0; i < 3; i++) {
+    cv.fillRect(x + 29 + i * 8, y + 3, 3, 5, WHITE);
+    cv.fillRect(x + 29 + i * 8, y + 34, 3, 5, WHITE);
+    cv.fillRect(x + 19, y + 13 + i * 8, 5, 3, WHITE);
+    cv.fillRect(x + 50, y + 13 + i * 8, 5, 3, WHITE);
   }
-  cv.rect(bx, by, 60, 60, 2, INK);
-  // White king (circle + orb on top) and black king on the board edge.
-  // No cross marks: a cross reads as a medical sign at this size.
-  cv.fillCircle(bx + 82, by + 18, 13, WHITE);
-  cv.rect(bx + 69, by + 5, 26, 26, 2, INK);
-  cv.fillCircle(bx + 82, by + 5, 4, INK);
-  cv.fillCircle(bx + 82, by + 48, 13, INK);
-  cv.fillCircle(bx + 82, by + 35, 4, WHITE);
-  // Flags: India (saffron/white/green) and Uzbekistan (blue/white/green).
-  const fx = x + 168;
-  const fy = y + 10;
-  cv.fillRect(fx, fy, 58, 9, [255, 153, 51]);
-  cv.fillRect(fx, fy + 9, 58, 9, WHITE);
-  cv.fillRect(fx, fy + 18, 58, 9, [19, 136, 8]);
-  cv.fillRect(fx, fy + 38, 58, 9, [30, 144, 255]);
-  cv.fillRect(fx, fy + 47, 58, 9, WHITE);
-  cv.fillRect(fx, fy + 56, 58, 9, [30, 144, 60]);
-  cv.fillRect(fx, fy + 45, 58, 2, RED);
-  cv.rect(fx, fy, 58, 27, 1, INK);
-  cv.rect(fx, fy + 38, 58, 27, 1, INK);
-  // Clock: game starts 15:00 CET.
-  drawText(cv, "15:00", x + 238, y + 44, 16, NAVY, "B");
+  // Rising arrow, gold: up, dip, then up past the start.
+  cv.polyline([[x + 68, y + 34], [x + 108, y + 22], [x + 138, y + 26], [x + 188, y + 8]], 3, GOLD);
+  cv.polyFill([[x + 188, y + 8], [x + 174, y + 6], [x + 182, y + 18]], GOLD);
+  // Small bars under the arrow, teal.
+  cv.fillRect(x + 196, y + 28, 8, 8, TEAL);
+  cv.fillRect(x + 208, y + 24, 8, 12, TEAL);
+  cv.fillRect(x + 220, y + 20, 8, 16, TEAL);
 }
 
-function drawStrikeHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
-  // Night skyline after an overnight strike: dark sky, lit windows, one
-  // damaged tower with a smoke plume and an orange blast flash.
-  cv.fillRect(x, y, w, h, [38, 48, 66]);
-  // Stars.
-  for (const [sx, sy] of [[24, 10], [70, 6], [120, 12], [200, 8], [260, 12], [300, 6]] as Array<[number, number]>) {
-    cv.fillCircle(x + sx, y + sy, 1.5, WHITE);
-  }
-  // Buildings (left to right), windows lit.
-  const towers: Array<[number, number, number]> = [[8, 44, 34], [52, 36, 40], [102, 48, 30], [142, 30, 44], [196, 42, 36], [242, 34, 40], [292, 46, 24]];
-  for (const [tx, tw, th] of towers) {
-    cv.fillRect(x + tx, y + h - th, tw, th, [24, 30, 42]);
-    for (let wy = y + h - th + 6; wy < y + h - 6; wy += 9) {
-      for (let wx = x + tx + 5; wx < x + tx + tw - 5; wx += 10) {
-        cv.fillRect(wx, wy, 4, 5, [255, 196, 0]);
-      }
-    }
-  }
-  // Damaged tower (centre): jagged top, dark gap, blast flash + smoke.
-  cv.polyFill([[x + 142, y + h - 30], [x + 152, y + h - 44], [x + 162, y + h - 32], [x + 172, y + h - 44], [x + 182, y + h - 30], [x + 186, y + h], [x + 142, y + h]], [24, 30, 42]);
-  cv.fillCircle(x + 164, y + h - 48, 9, [255, 140, 0]);
-  cv.fillCircle(x + 164, y + h - 48, 5, [255, 220, 120]);
-  cv.fillCircle(x + 150, y + 8, 8, [120, 124, 132]);
-  cv.fillCircle(x + 162, y + 2, 10, [150, 154, 162]);
-  cv.fillCircle(x + 176, y + 8, 7, [120, 124, 132]);
+function drawWarshipHero(cv: Canvas, x: number, y: number, w: number, h: number): void {
+  // Warship at sea, drone overhead, blast at the bow. Sea background.
+  cv.fillRect(x, y, w, h, SEA);
+  // Drone, top centre: body + two rotor bars. (Kept clear of the CLAIM
+  // chip, which covers the top-right corner of the illustration.)
+  cv.fillRect(x + 146, y + 8, 8, 4, INK);
+  cv.hline(x + 138, y + 6, 24, 1, INK);
+  cv.hline(x + 142, y + 13, 16, 1, INK);
+  // Superstructure + mast + gun turret.
+  cv.fillRect(x + 90, y + 14, 60, 12, [90, 96, 104]);
+  cv.vline(x + 120, y + 6, 8, 2, [40, 44, 50]);
+  cv.fillRect(x + 180, y + 20, 24, 6, [40, 44, 50]);
+  // Hull with pointed bow.
+  cv.fillRect(x + 30, y + 26, 200, 10, [70, 76, 84]);
+  cv.polyFill([[x + 230, y + 26], [x + 258, y + 31], [x + 230, y + 36]], [70, 76, 84]);
+  cv.fillRect(x + 30, y + 34, 200, 2, RED);
+  // Blast at the bow + smoke.
+  cv.fillCircle(x + 252, y + 20, 8, ORANGE);
+  cv.fillCircle(x + 252, y + 20, 4, [255, 220, 120]);
+  cv.fillCircle(x + 244, y + 10, 5, [120, 124, 132]);
+  cv.fillCircle(x + 256, y + 6, 4, [150, 154, 162]);
+  // Waves.
+  cv.fillRect(x + 10, y + h - 3, 60, 2, WHITE);
+  cv.fillRect(x + 200, y + h - 3, 80, 2, WHITE);
 }
 
 // Small 32x32 card icons.
 function drawCardIcon(cv: Canvas, n: number, x: number, y: number): void {
-  const bgs: Record<number, RGB> = { 4: TEAL, 5: NAVY, 6: GOLD, 7: RED, 8: NAVY, 9: SLATE, 10: TEAL, 11: RED };
+  const bgs: Record<number, RGB> = { 4: NAVY, 5: ORANGE, 6: GOLD, 7: TEAL, 8: NAVY, 9: GOLD, 10: RED, 11: NAVY, 12: SLATE, 13: TEAL, 14: RED, 15: ORANGE };
   cv.fillRect(x, y, 32, 32, bgs[n] ?? SLATE);
   if (n === 4) {
+    // Jet, side view, nose right.
+    cv.polyFill([[x + 4, y + 14], [x + 26, y + 14], [x + 28, y + 17], [x + 4, y + 17]], WHITE);
+    cv.polyFill([[x + 14, y + 17], [x + 20, y + 17], [x + 16, y + 24], [x + 12, y + 24]], WHITE);
+    cv.polyFill([[x + 6, y + 14], [x + 10, y + 14], [x + 7, y + 8], [x + 5, y + 8]], WHITE);
+    cv.fillRect(x + 22, y + 13, 4, 2, NAVY);
+  } else if (n === 5) {
+    // Explosion starburst.
+    for (const [dx, dy] of [[0, -13], [9, -9], [13, 0], [9, 9], [0, 13], [-9, 9], [-13, 0], [-9, -9]] as Array<[number, number]>) {
+      cv.line(x + 16, y + 16, x + 16 + dx, y + 16 + dy, 2, [255, 220, 120]);
+    }
+    cv.fillCircle(x + 16, y + 16, 9, [255, 220, 120]);
+    cv.fillCircle(x + 16, y + 16, 5, WHITE);
+  } else if (n === 6) {
+    // Chess mini board 4x4.
+    const bs = 6;
+    const bx = x + 4;
+    const by = y + 4;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        cv.fillRect(bx + c * bs, by + r * bs, bs, bs, (r + c) % 2 === 0 ? WHITE : INK);
+      }
+    }
+    cv.rect(bx, by, 24, 24, 1, WHITE);
+  } else if (n === 7) {
     // Oil barrel.
     cv.fillRect(x + 9, y + 6, 14, 20, WHITE);
     cv.fillRect(x + 9, y + 11, 14, 2, INK);
     cv.fillRect(x + 9, y + 20, 14, 2, INK);
-  } else if (n === 5) {
+  } else if (n === 8) {
     // Chip.
     cv.fillRect(x + 8, y + 8, 16, 16, WHITE);
     cv.fillRect(x + 13, y + 13, 6, 6, NAVY);
@@ -645,41 +714,45 @@ function drawCardIcon(cv: Canvas, n: number, x: number, y: number): void {
       cv.fillRect(x + 3, y + 11 + i * 5, 5, 2, WHITE);
       cv.fillRect(x + 24, y + 11 + i * 5, 5, 2, WHITE);
     }
-  } else if (n === 6) {
+  } else if (n === 9) {
     // Bank.
     cv.polyFill([[x + 4, y + 8], [x + 16, y + 3], [x + 28, y + 8]], WHITE);
     cv.fillRect(x + 7, y + 11, 3, 14, WHITE);
     cv.fillRect(x + 14, y + 11, 3, 14, WHITE);
     cv.fillRect(x + 21, y + 11, 3, 14, WHITE);
     cv.fillRect(x + 5, y + 26, 22, 2, WHITE);
-  } else if (n === 7) {
+  } else if (n === 10) {
     // Medical cross in a circle.
     cv.fillCircle(x + 16, y + 16, 12, WHITE);
     cv.fillRect(x + 14, y + 8, 4, 16, RED);
     cv.fillRect(x + 8, y + 14, 16, 4, RED);
-  } else if (n === 8) {
+  } else if (n === 11) {
     // EU circle of stars.
     for (let i = 0; i < 12; i++) {
       const a = (i / 12) * Math.PI * 2;
       cv.fillCircle(x + 16 + 9 * Math.cos(a), y + 16 + 9 * Math.sin(a), 1.6, [255, 220, 0]);
     }
-  } else if (n === 9) {
+  } else if (n === 12) {
     // Gavel.
     cv.line(x + 7, y + 24, x + 24, y + 7, 3, WHITE);
     cv.fillRect(x + 18, y + 4, 9, 6, WHITE);
     cv.fillRect(x + 5, y + 24, 10, 3, WHITE);
-  } else if (n === 10) {
+  } else if (n === 13) {
     // Ballot box + check.
     cv.fillRect(x + 6, y + 12, 20, 14, WHITE);
     cv.fillRect(x + 12, y + 8, 8, 4, WHITE);
     cv.polyline([[x + 10, y + 20], [x + 14, y + 24], [x + 22, y + 14]], 2, RED);
-  } else if (n === 11) {
+  } else if (n === 14) {
     // Ship + blast star.
     cv.polyFill([[x + 4, y + 20], [x + 22, y + 20], [x + 19, y + 27], [x + 7, y + 27]], WHITE);
     cv.fillRect(x + 12, y + 9, 2, 11, WHITE);
     cv.fillCircle(x + 24, y + 9, 4, [255, 196, 0]);
     cv.line(x + 24, y + 2, x + 24, y + 16, 1, [255, 196, 0]);
     cv.line(x + 17, y + 9, x + 31, y + 9, 1, [255, 196, 0]);
+  } else if (n === 15) {
+    // Flame.
+    cv.polyFill([[x + 16, y + 4], [x + 22, y + 14], [x + 24, y + 20], [x + 20, y + 27], [x + 12, y + 27], [x + 8, y + 20], [x + 10, y + 14]], [255, 220, 120]);
+    cv.polyFill([[x + 16, y + 14], [x + 20, y + 19], [x + 19, y + 25], [x + 13, y + 25], [x + 12, y + 19]], RED);
   }
 }
 
@@ -748,56 +821,57 @@ const M = 14;
 const CW = W - 2 * M;
 
 function drawMasthead(cv: Canvas): void {
-  drawTextCentered(cv, "THE WORLD TODAY", W / 2, 8, 36, INK, "B");
-  cv.fillRect(M, 52, CW, 3, RED);
-  drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 58, 28, INK, "B");
-  drawTextCentered(cv, "28 STORIES - 7 REGIONS - ONE PAGE", W / 2, 92, 14, NAVY, "B");
-  const kicker = "KOREA JET SCARE - CHESS CROWN ON THE LINE - ZAPORIZHZHIA HIT";
+  drawTextCentered(cv, "THE WORLD TODAY", W / 2, 4, 36, INK, "B");
+  cv.fillRect(M, 42, CW, 3, RED);
+  drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 46, 28, INK, "B");
+  drawTextCentered(cv, "37 STORIES - 9 REGIONS - ONE PAGE", W / 2, 78, 14, NAVY, "B");
+  const kicker = "TANKERS ABLAZE IN HORMUZ - NVIDIA UP 31.5 - WARSHIP SUNK OFF LIBYA";
   const ks = fitSize(kicker, 19, CW, "B");
-  drawTextCentered(cv, kicker, W / 2, 112, ks, RED, "B");
-  cv.fillRect(M, 134, CW, 2, INK);
+  drawTextCentered(cv, kicker, W / 2, 96, ks, RED, "B");
+  cv.fillRect(M, 116, CW, 2, INK);
 }
 
 function drawStats(cv: Canvas): void {
-  const y0 = 140;
+  const y0 = 120;
   const bw = CW / 6;
   for (let i = 0; i < STATS.length; i++) {
     const x = M + i * bw;
     const s = STATS[i];
     drawTextCentered(cv, s.num, x + bw / 2, y0, 24, RED, "B");
-    drawTextCentered(cv, s.label1, x + bw / 2, y0 + 30, 14, INK, "R");
-    drawTextCentered(cv, s.label2, x + bw / 2, y0 + 48, 14, SLATE, "R");
-    if (i > 0) cv.vline(x, y0 + 2, 58, 1, SLATE);
+    drawTextCentered(cv, s.label1, x + bw / 2, y0 + 27, 14, INK, "R");
+    drawTextCentered(cv, s.label2, x + bw / 2, y0 + 43, 14, SLATE, "R");
+    if (i > 0) cv.vline(x, y0 + 2, 50, 1, SLATE);
   }
-  cv.fillRect(M, y0 + 66, CW, 2, INK);
+  cv.fillRect(M, y0 + 56, CW, 2, INK);
 }
 
 function drawRegions(cv: Canvas): void {
   const parts = REGIONS.map((r) => r[0] + " " + r[1]);
   const text = parts.join(" - ");
-  drawTextCentered(cv, text, W / 2, 210, 15, NAVY, "B");
+  const rs = fitSize(text, 15, CW, "B");
+  drawTextCentered(cv, text, W / 2, 180, rs, NAVY, "B");
 }
 
 function drawHero(cv: Canvas, s: Story, x: number, y0: number, w: number, h: number): void {
   cv.rect(x, y0, w, h, 2, INK);
-  if (s.n === 1) drawJetHero(cv, x + 2, y0 + 2, w - 4, 66);
-  else if (s.n === 2) drawChessHero(cv, x + 2, y0 + 2, w - 4, 66);
-  else drawStrikeHero(cv, x + 2, y0 + 2, w - 4, 66);
+  if (s.n === 1) drawTankerHero(cv, x + 2, y0 + 2, w - 4, 42);
+  else if (s.n === 2) drawChipHero(cv, x + 2, y0 + 2, w - 4, 42);
+  else drawWarshipHero(cv, x + 2, y0 + 2, w - 4, 42);
   // Epistemic tag chip on the illustration.
   const tag = s.tag as string;
   const tw = textWidth(tag, 14, "B") + 12;
   cv.fillRect(x + w - 10 - tw, y0 + 8, tw, 20, RED);
   drawText(cv, tag, x + w - 10 - tw + 6, y0 + 11, 14, WHITE, "B");
   // Kicker: place + beat left, source right.
-  drawText(cv, s.place + " - " + s.beat, x + 8, y0 + 72, 14, RED, "B");
+  drawText(cv, s.place + " - " + s.beat, x + 8, y0 + 48, 14, RED, "B");
   const srcW = textWidth(s.src, 14, "B");
-  drawText(cv, s.src, x + w - 8 - srcW, y0 + 72, 14, SLATE, "B");
+  drawText(cv, s.src, x + w - 8 - srcW, y0 + 48, 14, SLATE, "B");
   // Headline, 2 lines max, generous leading.
   const hl = wrapText(s.head, 21, w - 16, 2, "B");
-  drawLines(cv, hl, x + 8, y0 + 92, 21, 25, INK, "B");
+  drawLines(cv, hl, x + 8, y0 + 66, 21, 23, INK, "B");
   // Body, 3 lines max, generous leading.
   const bl = wrapText(s.body, 14, w - 16, 3, "R");
-  drawLines(cv, bl, x + 8, y0 + 144, 14, 17, INK, "R");
+  drawLines(cv, bl, x + 8, y0 + 106, 14, 15, INK, "R");
 }
 
 function drawCard(cv: Canvas, s: Story, x: number, y0: number, w: number, h: number): void {
@@ -827,24 +901,26 @@ function drawCard(cv: Canvas, s: Story, x: number, y0: number, w: number, h: num
     drawText(cv, s.src, srcStart, y0 + h - 16, 14, SLATE, "B");
   }
   // Icon + headline row.
-  drawCardIcon(cv, s.n, x + 6, y0 + 24);
+  drawCardIcon(cv, s.n, x + 6, y0 + 19);
   const hl = wrapText(s.head, 15, w - 48, 2, "B");
-  drawLines(cv, hl, x + 44, y0 + 24, 15, 18, INK, "B");
-  // Body, 2 lines max, generous leading.
-  const bl = wrapText(s.body, 14, w - 12, 2, "R");
-  drawLines(cv, bl, x + 6, y0 + 64, 14, 17, INK, "R");
+  drawLines(cv, hl, x + 44, y0 + 19, 15, 16, INK, "B");
+  // Body, 3 lines max (cards 4/5/6/15 wrap to 3 at this width).
+  const bl = wrapText(s.body, 14, w - 12, 3, "R");
+  drawLines(cv, bl, x + 6, y0 + 51, 14, 14, INK, "R");
 }
 
 function drawBottom(cv: Canvas): void {
-  const y0 = 646;
+  const y0 = 610;
   // Map column.
   drawText(cv, "WHERE IT HAPPENED", M, y0, 16, INK, "B");
-  drawMap(cv, M, y0 + 20, 280, 200, [...HEROES, ...CARDS]);
-  drawLines(cv, ["RED PINS = STORIES 1-11.", "POSITIONS APPROXIMATE."], M, y0 + 224, 14, 17, SLATE, "R");
-  // Honesty legend, two lines in the map column below the caption (v4:
-  // moved out of the full-width slot so the briefs have room to reflow).
-  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 262, 14, SLATE, "R");
-  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 279, 14, SLATE, "R");
+  drawMap(cv, M, y0 + 18, 280, 160, [...HEROES, ...CARDS]);
+  drawLines(cv, ["RED PINS = STORIES 1-15.", "POSITIONS APPROXIMATE."], M, y0 + 182, 14, 17, SLATE, "R");
+  // Honesty legend, two lines in the map column below the caption.
+  drawText(cv, "REPORTED = NAMED SOURCES.", M, y0 + 216, 14, SLATE, "R");
+  drawText(cv, "CLAIM = ONE SIDE'S ACCOUNT.", M, y0 + 233, 14, SLATE, "R");
+  // DATE CHECK, wrapped in the map column (room the briefs do not use).
+  const dc = wrapText(DATE_CHECK_TEXT, 14, 280, 4, "R");
+  drawLines(cv, dc, M, y0 + 250, 14, 17, INK, "R");
   // Briefs column.
   const bx = 306;
   const bw = W - M - bx;
@@ -855,21 +931,21 @@ function drawBottom(cv: Canvas): void {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = bx + col * (colW + 12);
-    const y = y0 + 20 + row * 34;
+    const y = y0 + 18 + row * 32;
     const full = b.n + " " + b.place + " - " + b.text + " (" + b.src + ")";
     const lines = wrapText(full, 14, colW, 2, "R");
     // First token (the number) in red, the rest in ink.
     const first = lines[0].split(" ")[0];
     drawText(cv, first, x, y, 14, RED, "R");
     drawText(cv, lines[0].slice(first.length + 1), x + textWidth(first + " ", 14, "R"), y, 14, INK, "R");
-    if (lines.length > 1) drawText(cv, lines[1], x, y + 17, 14, INK, "R");
+    if (lines.length > 1) drawText(cv, lines[1], x, y + 15, 14, INK, "R");
   }
 }
 
 function drawFooter(cv: Canvas): void {
   const y0 = 976;
   cv.fillRect(M, y0, CW, 2, RED);
-  drawText(cv, "EVERY STORY ABOVE IS TUESDAY 24 NOVEMBER 2026.", M, y0 + 6, 16, INK, "B");
+  drawText(cv, "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT.", M, y0 + 6, 16, INK, "B");
 }
 
 function render(): Buffer {
@@ -880,13 +956,13 @@ function render(): Buffer {
   drawRegions(cv);
   const hw = 324;
   for (let i = 0; i < HEROES.length; i++) {
-    drawHero(cv, HEROES[i], M + i * (hw + 12), 230, hw, 196);
+    drawHero(cv, HEROES[i], M + i * (hw + 12), 198, hw, 132);
   }
   const cw = 243;
   for (let i = 0; i < CARDS.length; i++) {
     const col = i % 4;
     const row = Math.floor(i / 4);
-    drawCard(cv, CARDS[i], M + col * (cw + 8), 430 + row * 108, cw, 104);
+    drawCard(cv, CARDS[i], M + col * (cw + 8), 334 + row * 92, cw, 90);
   }
   drawBottom(cv);
   drawFooter(cv);
