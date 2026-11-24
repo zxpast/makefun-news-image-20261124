@@ -2,6 +2,16 @@
 // A broadsheet front page drawn programmatically: 37 verified stories
 // (3 heroes + 12 cards + 22 briefs), 9 regions, stat strip, dotted world
 // map with numbered pins, per-story sources.
+// v5b: red-team fixes — F1 TASHKENT dated FRIDAY in text + DATE CHECK;
+// F2 IOWA + F4 JAKARTA dated MONDAY in text + DATE CHECK; F3 header
+// "MORE NEWS", footer "DATED IN TEXT OR DATE CHECK", DATE CHECK rewritten
+// on one event-day standard; F5 kicker attributed (IRGC CLAIMS / KYIV
+// SAYS); F6 card 10 head names ISRAELI strike; F8 brief 36 rewritten
+// (300 BLACK SEA attacks, 7.3M aid at risk, MONDAY in text); F9 pin 6/8
+// offsets shifted; F10 warship darkened + blast moved clear of CLAIM tag,
+// LATAM renamed MEXICO; F7 toll updates verified first-hand (UAE 11->13,
+// Serang 24->26 dead Tuesday, 8 missing; Zaporizhzhia stays 22 — Reuters
+// still reports 22, the 40 figure did not verify).
 // v5: 3 new heavy heroes (Hormuz tankers, NVIDIA/Huang, Benghazi warship);
 // COP31 brief dated SUNDAY; non-Tuesday items name their day in text +
 // DATE CHECK line; footer no longer claims every story is Tuesday.
@@ -336,12 +346,14 @@ function assertCharset(text: string): void {
 
 // ---------------------------------------------------------------- Data ----
 // SSOT: one record per story. Every number on the page comes from a story
-// record; the checker below enforces that. All stories happened, or were
-// first reported, on Tuesday 24 November 2026, EXCEPT the items named in
-// the DATE CHECK line: NVIDIA, BENGHAZI, SERANG, BRASILIA and WFP broke
-// MONDAY, COP31 ended SUNDAY. Each of those names its day in its own
-// head/body (MONDAY/SUNDAY) or is listed in DATE CHECK; the footer no
-// longer claims every story is Tuesday. No Poland story appears.
+// record; the checker below enforces that. Most stories happened, or were
+// first reported, on Tuesday 24 November 2026. The exceptions are dated by
+// EVENT DAY in the DATE CHECK line and, where stated, in their own text:
+// SUNDAY: BENGHAZI (warship sunk), COP31 (ended); SATURDAY: SERANG blaze
+// (toll then updated to 26 on TUESDAY, in the card body); MONDAY: NVIDIA,
+// BRASILIA, WFP, IOWA, JAKARTA; FRIDAY: TASHKENT (rating lift). The footer
+// says non-Tuesday items are dated in text or DATE CHECK; it never claims
+// every story is Tuesday. No Poland story appears.
 type Story = {
   n: number;
   place: string;
@@ -400,7 +412,7 @@ const CARDS: Story[] = [
     head: "YOUNGEST TITLE MATCH BEGINS",
     body: "GUKESH DEFENDS CROWN VS SINDAROV. GAME 1 TODAY, 14 GAMES, $2.5M.",
     src: "FIDE", tag: "REPORTED",
-    lat: 46.2, lon: 6.1, dx: 28, dy: 22,
+    lat: 46.2, lon: 6.1, dx: 34, dy: 30,
   },
   {
     n: 7, place: "OSLO", beat: "ENERGY",
@@ -414,7 +426,7 @@ const CARDS: Story[] = [
     head: "ASIA STOCKS LEAP ON HUANG RETURN",
     body: "TAIWAN UP 9.1, KOSPI UP 7.5, NIKKEI UP 4.5.",
     src: "REUTERS", tag: "REPORTED",
-    lat: 25.0, lon: 121.6, dx: -14, dy: 36,
+    lat: 25.0, lon: 121.6, dx: -24, dy: 36,
   },
   {
     n: 9, place: "BERLIN", beat: "EU",
@@ -425,7 +437,7 @@ const CARDS: Story[] = [
   },
   {
     n: 10, place: "KHAN YOUNIS", beat: "WAR",
-    head: "STRIKE KILLS AT LEAST 3",
+    head: "ISRAELI STRIKE KILLS AT LEAST 3",
     body: "3 DEAD NEAR POLICE POST, MEDICS SAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: 31.5, lon: 34.4, dx: 30, dy: 26,
@@ -440,7 +452,7 @@ const CARDS: Story[] = [
   {
     n: 12, place: "JAKARTA", beat: "POLITICS",
     head: "EX-POLICE CHIEF CHARGED TREASON",
-    body: "6 SUSPECTS IN WIRETAP PLOT, POLICE SAY.",
+    body: "6 SUSPECTS NAMED MONDAY IN WIRETAP PLOT, POLICE SAY.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.8, dx: -25, dy: 30,
   },
@@ -460,8 +472,8 @@ const CARDS: Story[] = [
   },
   {
     n: 15, place: "SERANG", beat: "DISASTER",
-    head: "24 DEAD IN CANDY FACTORY FIRE",
-    body: "BLAZE SATURDAY. TOLL CONFIRMED MONDAY, 30 MISSING.",
+    head: "26 DEAD IN CANDY FACTORY FIRE",
+    body: "BLAZE SATURDAY. TOLL 26 TUESDAY, 8 MISSING.",
     src: "REUTERS", tag: "REPORTED",
     lat: -6.2, lon: 106.3, dx: 26, dy: -28,
   },
@@ -471,7 +483,7 @@ type Brief = { n: number; place: string; text: string; src: string };
 const BRIEFS: Brief[] = [
   { n: 16, place: "KATHMANDU", text: "M5.3 TREMOR HITS NEPAL, FELT IN INDIA.", src: "REUTERS" },
   { n: 17, place: "MEXICO CITY", text: "MEXICO INFLATION AT 3.96 IN NOVEMBER.", src: "INEGI" },
-  { n: 18, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 11 IN UAE.", src: "REUTERS" },
+  { n: 18, place: "RAS AL KHAIMAH", text: "BUS-TRUCK CRASH KILLS 13 IN UAE.", src: "REUTERS" },
   { n: 19, place: "WASHINGTON", text: "US HOLDS UP 60 PATRIOT MISSILES FOR KYIV.", src: "FT" },
   { n: 20, place: "BAMAKO", text: "WEST AFRICA RUSH TO REFINE OWN GOLD.", src: "REUTERS" },
   { n: 21, place: "PYONGYANG", text: "KOREA MAY SHUT SWISS OFFICE IN PYONGYANG.", src: "KCNA" },
@@ -486,11 +498,11 @@ const BRIEFS: Brief[] = [
   { n: 30, place: "RIYADH", text: "SAUDI STOCKS UP 0.8 ON TUESDAY.", src: "REUTERS" },
   { n: 31, place: "TOKYO", text: "FACTORY PMI RISES TO 53.7 IN JAPAN.", src: "REUTERS" },
   { n: 32, place: "JOHANNESBURG", text: "RAND STEADY AT 17.41 PER DOLLAR.", src: "REUTERS" },
-  { n: 33, place: "IOWA", text: "COURT CLEARS ARMY TO BLAST TOXIC LEAD AZIDE.", src: "REUTERS" },
+  { n: 33, place: "IOWA", text: "COURT CLEARS ARMY MONDAY TO BLAST TOXIC LEAD AZIDE.", src: "REUTERS" },
   { n: 34, place: "ANTALYA", text: "COP31 ENDS WITHOUT A DEAL SUNDAY. FIRST SINCE 2009.", src: "REUTERS" },
   { n: 35, place: "BRASILIA", text: "LULA FISCAL PLAN CLEARS CONGRESS MONDAY.", src: "REUTERS" },
-  { n: 36, place: "NEW YORK", text: "WFP: 300 SHIP ATTACKS PUT 7.3M AT RISK.", src: "REUTERS" },
-  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS.", src: "S AND P" },
+  { n: 36, place: "NEW YORK", text: "MONDAY: WFP: 300 BLACK SEA ATTACKS. 7.3M AID AT RISK.", src: "REUTERS" },
+  { n: 37, place: "TASHKENT", text: "S AND P LIFTS UZBEK RATING TO BB PLUS FRIDAY.", src: "S AND P" },
 ];
 
 // Stat strip: each number must appear verbatim in its story's text.
@@ -498,20 +510,24 @@ const STATS: Array<{ num: string; label1: string; label2: string; story: string 
   { num: "31.5", label1: "NVIDIA SURGE", label2: "PERCENT", story: "NVIDIA SOARS 31.5 AS HUANG RETURNS" },
   { num: "3", label1: "TANKERS HIT", label2: "IN HORMUZ", story: "IRGC: 3 TANKERS HIT MINES IN HORMUZ" },
   { num: "7", label1: "SEA DRONES", label2: "AT BENGHAZI", story: "7 SEA DRONES SANK MERKURY SUNDAY, KYIV SAYS." },
-  { num: "24", label1: "DEAD IN", label2: "SERANG FIRE", story: "24 DEAD IN CANDY FACTORY FIRE" },
+  { num: "26", label1: "DEAD IN", label2: "SERANG FIRE", story: "26 DEAD IN CANDY FACTORY FIRE" },
   { num: "07:52", label1: "ULLEUNG ALERT", label2: "LOCAL TIME", story: "SHELTER AT 07:52. NO AIRSPACE VIOLATION, MILITARY SAYS." },
-  { num: "11", label1: "KILLED IN", label2: "UAE CRASH", story: "BUS-TRUCK CRASH KILLS 11 IN UAE." },
+  { num: "13", label1: "KILLED IN", label2: "UAE CRASH", story: "BUS-TRUCK CRASH KILLS 13 IN UAE." },
 ];
 
-// Region strip: must sum to the story total (28) and span 7 regions.
+// Region strip: must sum to the story total (37) and span 9 regions.
 const REGIONS: Array<[string, number]> = [
-  ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 4], ["AMERICAS", 5], ["LATAM", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
+  ["ASIA", 10], ["EUROPE", 9], ["MIDEAST", 4], ["AMERICAS", 5], ["MEXICO", 1], ["AFRICA", 5], ["OCEANIA", 1], ["S. AMERICA", 1], ["CENTRAL ASIA", 1],
 ];
 
-// DATE CHECK line (map column, wrapped): every non-Tuesday story is named
-// here by its distinctive token, and each names its day in its own text
-// except WFP, which is dated by this line alone.
-const DATE_CHECK_TEXT = "DATE CHECK - MONDAY: NVIDIA, BENGHAZI, SERANG, BRASILIA, WFP. SUNDAY: COP31.";
+// DATE CHECK line (map column, wrapped to 4 lines): every non-Tuesday
+// story is named here by its distinctive token, on ONE standard — the
+// EVENT day. SUNDAY: BENGHAZI (warship sunk), COP31 (ended). SATURDAY:
+// SERANG blaze (toll updated Tuesday, in the card body). MONDAY: NVIDIA,
+// BRASILIA, WFP, IOWA, JAKARTA. FRIDAY: TASHKENT (rating lift). Each of
+// these also names its day in its own head/body, so no item depends on
+// this line alone.
+const DATE_CHECK_TEXT = "DATE CHECK - SUNDAY: BENGHAZI, COP31. SATURDAY: SERANG BLAZE. MONDAY: NVIDIA, BRASILIA, WFP, IOWA, JAKARTA. FRIDAY: TASHKENT.";
 
 // ------------------------------------------------------------- Checks ----
 // 9 asserts before render (SSOT + contradiction scan). Exit 1 on failure.
@@ -542,11 +558,11 @@ function checkAll(): void {
   // 6. Charset: every rendered string must be in the font.
   const texts = [
     "THE WORLD TODAY", "TUESDAY 24 NOVEMBER 2026", "37 STORIES - 9 REGIONS - ONE PAGE",
-    "TANKERS ABLAZE IN HORMUZ - NVIDIA UP 31.5 - WARSHIP SUNK OFF LIBYA",
+    "IRGC CLAIMS 3 TANKERS ABLAZE - NVIDIA UP 31.5 - KYIV SAYS WARSHIP SUNK",
     "WHERE IT HAPPENED", "RED PINS = STORIES 1-15. POSITIONS APPROXIMATE.",
     "REPORTED = NAMED SOURCES.", "CLAIM = ONE SIDE'S ACCOUNT.",
-    "ALSO ON TUESDAY",
-    "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT.",
+    "MORE NEWS",
+    "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT OR DATE CHECK.",
     DATE_CHECK_TEXT,
     ...STATS.flatMap((s) => [s.num, s.label1, s.label2]),
     ...REGIONS.flatMap((r) => [r[0], String(r[1])]),
@@ -578,10 +594,13 @@ function checkAll(): void {
   const nonTue: Array<{ n: number; day: string; token: string }> = [
     { n: 2, day: "MONDAY", token: "NVIDIA" },
     { n: 3, day: "SUNDAY", token: "MERKURY" },
-    { n: 15, day: "MONDAY", token: "SERANG" },
+    { n: 12, day: "MONDAY", token: "JAKARTA" },
+    { n: 15, day: "SATURDAY", token: "SERANG" },
+    { n: 33, day: "MONDAY", token: "IOWA" },
     { n: 34, day: "SUNDAY", token: "COP31" },
     { n: 35, day: "MONDAY", token: "BRASILIA" },
     { n: 36, day: "MONDAY", token: "WFP" },
+    { n: 37, day: "FRIDAY", token: "TASHKENT" },
   ];
   for (const item of nonTue) {
     const text = byN.get(item.n) as string;
@@ -653,19 +672,22 @@ function drawWarshipHero(cv: Canvas, x: number, y: number, w: number, h: number)
   cv.fillRect(x + 146, y + 8, 8, 4, INK);
   cv.hline(x + 138, y + 6, 24, 1, INK);
   cv.hline(x + 142, y + 13, 16, 1, INK);
-  // Superstructure + mast + gun turret.
-  cv.fillRect(x + 90, y + 14, 60, 12, [90, 96, 104]);
+  // Superstructure + mast + gun turret. Darkened (v5b): the pale grey
+  // superstructure washed out against the sea at judging width.
+  cv.fillRect(x + 90, y + 14, 60, 12, [64, 70, 78]);
   cv.vline(x + 120, y + 6, 8, 2, [40, 44, 50]);
   cv.fillRect(x + 180, y + 20, 24, 6, [40, 44, 50]);
-  // Hull with pointed bow.
-  cv.fillRect(x + 30, y + 26, 200, 10, [70, 76, 84]);
-  cv.polyFill([[x + 230, y + 26], [x + 258, y + 31], [x + 230, y + 36]], [70, 76, 84]);
+  // Hull with pointed bow, darkened to match.
+  cv.fillRect(x + 30, y + 26, 200, 10, [52, 58, 66]);
+  cv.polyFill([[x + 230, y + 26], [x + 258, y + 31], [x + 230, y + 36]], [52, 58, 66]);
   cv.fillRect(x + 30, y + 34, 200, 2, RED);
-  // Blast at the bow + smoke.
-  cv.fillCircle(x + 252, y + 20, 8, ORANGE);
-  cv.fillCircle(x + 252, y + 20, 4, [255, 220, 120]);
-  cv.fillCircle(x + 244, y + 10, 5, [120, 124, 132]);
-  cv.fillCircle(x + 256, y + 6, 4, [150, 154, 162]);
+  // Blast at the bow + smoke. Moved left (v5b): the old blast at x+252
+  // sat under the CLAIM tag chip, which covers the illustration from
+  // x+245; the blast now ends at x+244, clear of the chip.
+  cv.fillCircle(x + 236, y + 22, 8, ORANGE);
+  cv.fillCircle(x + 236, y + 22, 4, [255, 220, 120]);
+  cv.fillCircle(x + 228, y + 12, 5, [120, 124, 132]);
+  cv.fillCircle(x + 240, y + 8, 4, [150, 154, 162]);
   // Waves.
   cv.fillRect(x + 10, y + h - 3, 60, 2, WHITE);
   cv.fillRect(x + 200, y + h - 3, 80, 2, WHITE);
@@ -825,7 +847,7 @@ function drawMasthead(cv: Canvas): void {
   cv.fillRect(M, 42, CW, 3, RED);
   drawTextCentered(cv, "TUESDAY 24 NOVEMBER 2026", W / 2, 46, 28, INK, "B");
   drawTextCentered(cv, "37 STORIES - 9 REGIONS - ONE PAGE", W / 2, 78, 14, NAVY, "B");
-  const kicker = "TANKERS ABLAZE IN HORMUZ - NVIDIA UP 31.5 - WARSHIP SUNK OFF LIBYA";
+  const kicker = "IRGC CLAIMS 3 TANKERS ABLAZE - NVIDIA UP 31.5 - KYIV SAYS WARSHIP SUNK";
   const ks = fitSize(kicker, 19, CW, "B");
   drawTextCentered(cv, kicker, W / 2, 96, ks, RED, "B");
   cv.fillRect(M, 116, CW, 2, INK);
@@ -924,7 +946,7 @@ function drawBottom(cv: Canvas): void {
   // Briefs column.
   const bx = 306;
   const bw = W - M - bx;
-  drawText(cv, "ALSO ON TUESDAY", bx, y0, 16, INK, "B");
+  drawText(cv, "MORE NEWS", bx, y0, 16, INK, "B");
   const colW = Math.floor((bw - 12) / 2);
   for (let i = 0; i < BRIEFS.length; i++) {
     const b = BRIEFS[i];
@@ -945,7 +967,7 @@ function drawBottom(cv: Canvas): void {
 function drawFooter(cv: Canvas): void {
   const y0 = 976;
   cv.fillRect(M, y0, CW, 2, RED);
-  drawText(cv, "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT.", M, y0 + 6, 16, INK, "B");
+  drawText(cv, "TUESDAY 24 NOVEMBER 2026 - NON-TUESDAY ITEMS DATED IN TEXT OR DATE CHECK.", M, y0 + 6, 16, INK, "B");
 }
 
 function render(): Buffer {
